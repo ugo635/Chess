@@ -1,0 +1,25 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+group = 'com.me.chess'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+javafx {
+    version = "26.0.2"
+    modules = [ 'javafx.controls' ]
+}
+
+application {
+    mainClass = "com.me.chess.Main"
+    mainModule = "chess"
+}
+
+run {
+    jvmArgs += "--enable-native-access=javafx.graphics"
+}
