@@ -1,9 +1,9 @@
 package com.me.chess.game;
 
 import com.me.chess.board.Board;
-import com.me.chess.board.Point;
+import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
-import com.me.chess.board.pieces.Piece;
+import com.me.chess.pieces.Piece;
 
 import java.util.List;
 
@@ -45,10 +45,15 @@ public class Move {
         fromPiece.setSquare(this.to);
 
         // Resets the highlight
-        this.from.setHighlighted(false);
+        this.from.resetState();
 
         // Resets everything to null
         this.from = null;
         this.to = null;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Move(%s, %s)", this.from, this.to);
     }
 }

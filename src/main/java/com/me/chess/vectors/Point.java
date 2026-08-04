@@ -1,4 +1,6 @@
-package com.me.chess.board;
+package com.me.chess.vectors;
+
+import com.me.chess.board.Board;
 
 public class Point {
     public int x;
@@ -22,6 +24,20 @@ public class Point {
     public Point add(int dx, int dy) {
         this.x += dx;
         this.y += dy;
+
+        return this;
+    }
+
+    public Point add(Point p) {
+        this.x += p.x;
+        this.y += p.y;
+
+        return this;
+    }
+
+    public Point times(int multiplier) {
+        this.x *= multiplier;
+        this.y *= multiplier;
 
         return this;
     }

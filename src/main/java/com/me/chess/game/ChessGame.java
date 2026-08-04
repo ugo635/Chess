@@ -1,4 +1,4 @@
-package com.me.chess;
+package com.me.chess.game;
 
 import com.me.chess.board.Board;
 import javafx.scene.Scene;

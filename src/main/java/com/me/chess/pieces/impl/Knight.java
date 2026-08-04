@@ -1,13 +1,14 @@
-package com.me.chess.board.pieces;
+package com.me.chess.pieces.impl;
 
-import com.me.chess.board.Point;
+import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
+import com.me.chess.pieces.Piece;
 import javafx.scene.paint.Color;
 
 import java.util.List;
 
-public class Rook extends Piece {
-    public Rook(Square square, Color color) {
+public class Knight extends Piece {
+    public Knight(Square square, Color color) {
         super(square, color);
     }
 

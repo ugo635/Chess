@@ -1,16 +1,16 @@
 package com.me.chess.board;
 
-import com.me.chess.board.pieces.Pawn;
-import com.me.chess.board.pieces.Piece;
+import com.me.chess.pieces.impl.Pawn;
+import com.me.chess.pieces.Piece;
+import com.me.chess.vectors.Point;
 import com.me.chess.game.Move;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.me.chess.board.pieces.Piece.PieceType.*;
+import static com.me.chess.pieces.Piece.PieceType.*;
 
 public class Board {
     public List<Square> squares;
@@ -35,17 +35,22 @@ public class Board {
                 this.grid.add(square.content, x, Math.abs(y - 8));
 
                 square.onClick(() -> {
-                    if (this.move.from == null) {
+                    if (this.move.from == null) { // If we select a piece
                         if (square.isEmpty()) return;
-                        square.setHighlighted(!square.isHighlighted);
+                        square.toggleSelect();
+
+                        if (square.getPiece() != null) square.toggleShowingAttacks();
+
                         this.move.from = square;
                     } else {
-                        if (this.move.from == square) {
+                        if (this.move.from == square) { // If we clicked the on the same square a second time (to unselect)
                             this.move.from = null;
-                            square.setHighlighted(false);
+                            square.resetState();
                             return;
                         }
 
+                        // If we move
+                        this.move.from.toggleShowingAttacks();
                         this.move.to = square;
                         this.move.move();
                     }

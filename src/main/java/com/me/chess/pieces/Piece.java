@@ -1,8 +1,10 @@
-package com.me.chess.board.pieces;
+package com.me.chess.pieces;
 
 import com.me.chess.board.Board;
-import com.me.chess.board.Point;
+import com.me.chess.vectors.Direction;
+import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
+import com.me.chess.pieces.impl.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -12,7 +14,7 @@ import javafx.scene.paint.Color;
 import java.util.List;
 import java.util.Objects;
 
-import static com.me.chess.ChessGame.SQUARE_SIZE;
+import static com.me.chess.game.ChessGame.SQUARE_SIZE;
 
 public abstract class Piece {
     public final ImageView render;
@@ -58,6 +60,10 @@ public abstract class Piece {
         this.square = square;
     }
 
+    public boolean hasntMoved() {
+        return this.move == 0;
+    }
+
     public void empty() {
         this.square.content.getChildren().remove(this.render);
         this.square = null;
@@ -65,6 +71,17 @@ public abstract class Piece {
 
     public Point getPosition() {
         return this.square.getPosition();
+    }
+
+    public boolean isEmptyInRange(Direction direction, int range) {
+        Point diff = direction.getDiff();
+
+        // If there's one square that isn't empty it will return false
+        for (int i = 1; i < 9 && i <= range; i++) {
+            if (!this.getPosition().add(diff.times(i)).isAnEmptySquare(this.board)) return false;
+        }
+
+        return true;
     }
 
     public abstract List<Point> getLegalMoves();

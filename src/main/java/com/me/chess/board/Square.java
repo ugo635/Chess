@@ -1,13 +1,14 @@
 package com.me.chess.board;
 
-import com.me.chess.board.pieces.Piece;
+import com.me.chess.pieces.Piece;
+import com.me.chess.vectors.Point;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
+import org.jetbrains.annotations.Nullable;
 
-import static com.me.chess.ChessGame.SQUARE_SIZE;
+import static com.me.chess.game.ChessGame.SQUARE_SIZE;
 
 public class Square {
     public int x;
@@ -15,15 +16,15 @@ public class Square {
     public Board board;
     public Background background;
     public StackPane content;
-    public boolean isHighlighted;
-    public Rectangle highlightedRectangle;
-    private Piece piece;
+    public Highlight highlight;
+    private State state;
+    private @Nullable Piece piece;
 
     public Square(Board board, Color color, int x, int y) {
         this.board = board;
-        this.highlightedRectangle = getHighlightedRectangle();
+        this.state = State.NONE;
+        this.highlight = new Highlight(this);
         this.background = new Background(color);
-        this.isHighlighted = false;
         this.x = x;
         this.y = y;
 
@@ -35,17 +36,12 @@ public class Square {
         this.content.setOnMouseClicked(event -> runnable.run());
     }
 
-    public void setHighlighted(boolean highlight) {
-        isHighlighted = highlight;
-
-        if (highlight) {
-            this.addElement(highlightedRectangle);
-        } else {
-            this.removeElement(highlightedRectangle);
-        }
+    public void setState(State state) {
+        this.highlight.updateState(state);
+        this.state = state;
     }
 
-    public void setPiece(Piece piece) {
+    public void setPiece(@Nullable Piece piece) {
         this.piece = piece;
         if (piece != null) this.piece.render(this.content);
     }
@@ -54,7 +50,7 @@ public class Square {
         this.setPiece(null);
     }
 
-    public Piece getPiece() {
+    public @Nullable Piece getPiece() {
         return this.piece;
     }
 
@@ -74,13 +70,30 @@ public class Square {
         return new Point(this.x, this.y);
     }
 
-    private Rectangle getHighlightedRectangle() {
-        Rectangle rect = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.TRANSPARENT);
-        rect.setStroke(Color.DARKVIOLET);
-        rect.setStrokeType(StrokeType.INSIDE);
-        rect.setStrokeWidth(2.5);
+    public State getState() {
+        return this.state;
+    }
 
-        return rect;
+    public void toggleSelect() {
+        this.setState(this.state.toggleSelect());
+    }
+
+    public void toggleLegalMove() {
+        this.setState(this.state.toggleLegalMove());
+    }
+
+    public void resetState() {
+        this.setState(State.NONE);
+    }
+
+    public void toggleShowingAttacks() {
+        // Can't be null cuz if we got here it's that it passed the null check in the Board constructor
+        this.getPiece()
+                .getLegalMoves()
+                .stream()
+                .map(this.board::getSquareAt)
+                .forEach(Square::toggleLegalMove);
+
     }
 
     public static class Background {
@@ -92,6 +105,23 @@ public class Square {
     }
 
     public String toString() {
-        return String.format("(%s, %s)", this.x, this.y);
+        return String.format("Square(Point(%s, %s), State(%s))", this.x, this.y, this.state);
+    }
+
+    public enum State {
+        NONE, SELECTED, LEGAL_MOVE;
+
+        /**
+         * Will replace NONE with SELECTED
+         * Will replace SELECTED with NONE
+         * Will replace LEGAL_MOVE with NONE
+         */
+        public State toggleSelect() {
+            return this == NONE ? SELECTED : NONE;
+        }
+
+        public State toggleLegalMove() {
+            return this == NONE ? LEGAL_MOVE : NONE;
+        }
     }
 }
