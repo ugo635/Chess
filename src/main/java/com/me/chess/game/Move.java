@@ -31,12 +31,14 @@ public class Move {
     public boolean isLegal() {
         List<Point> legalMoves = from.getPiece().getLegalMoves();
 
-        return legalMoves.contains(to.getPosition());
+        boolean contains = legalMoves.contains(to.getPosition());
+        boolean checks = this.isKingChecked(this.from.getPiece().color) && !(this.from.getPiece() instanceof King);
+        return contains || checks;
     }
 
     @SuppressWarnings("DataFlowIssue")
     public void move() throws IllegalMoveException {
-        if (!this.isLegal() || this.isKingChecked(this.from.getPiece().color) && !(this.from.getPiece() instanceof King)) throw new IllegalMoveException("Move isn't legal");
+        if (!this.isLegal()) throw new IllegalMoveException("Move isn't legal");
         Piece fromPiece = this.from.getPiece();
 
         // Update the moves counter
