@@ -24,7 +24,7 @@ public class King extends Piece {
             if (this.getPosition().add(dir.getDiff()).isOppositeColorPieceOrEmpty(this.board, this)) legalMoves.add(this.getPosition().add(dir.getDiff()));
         }
 
-        // For small castle
+        // For Small Castle
         if (this.hasntMoved()) {
             Rook rook = this.board.getPiecesofType(Rook.class)
                     .stream()
@@ -35,16 +35,38 @@ public class King extends Piece {
             if (rook.hasntMoved() && this.isEmptyInRange(Direction.RIGHT, 2)) legalMoves.add(this.getPosition().addX(2));
         }
 
+        // For Long Castle
+        if (this.hasntMoved()) {
+            Rook rook = this.board.getPiecesofType(Rook.class)
+                    .stream()
+                    .filter(r -> !r.isRightRook && r.isOppositeColor(this))
+                    .toList()
+                    .getFirst();
 
+            if (rook.hasntMoved() && this.isEmptyInRange(Direction.LEFT, 2)) legalMoves.add(this.getPosition().addX(-2));
+        }
 
         return legalMoves;
     }
 
     @Override
+    @SuppressWarnings("DataFlowIssue")
     public void onMove(Move move) {
+        // Short Castle
         if (move.from == this.getSquare() && move.to == move.from.getPosition().addX(2).getSquare(this.board)) {
             Square oldRookPos = this.getPosition().addX(3).getSquare(this.board);
             Square newRookPos = this.getPosition().addX(1).getSquare(this.board);
+
+            Piece rook = oldRookPos.getPiece();
+            oldRookPos.empty();
+            rook.setSquare(newRookPos);
+            newRookPos.setPiece(rook);
+        }
+
+        // Long Castle
+        if (move.from == this.getSquare() && move.to == move.from.getPosition().addX(-2).getSquare(this.board)) {
+            Square oldRookPos = this.getPosition().addX(-4).getSquare(this.board);
+            Square newRookPos = this.getPosition().addX(-1).getSquare(this.board);
 
             Piece rook = oldRookPos.getPiece();
             oldRookPos.empty();
