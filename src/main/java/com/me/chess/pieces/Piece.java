@@ -27,7 +27,7 @@ public abstract class Piece {
 
     public Piece(Square square, Color color) {
         this.piece = PieceType.valueOf(getClass().getSimpleName().toUpperCase());
-        this.color = color == Color.BLACK ? PieceColor.BLACK : PieceColor.WHITE;
+        this.color = PieceColor.from(color);
         this.move = 0;
         this.square = square;
         this.board = square.board;
@@ -148,6 +148,22 @@ public abstract class Piece {
     }
 
     public enum PieceColor {
-        WHITE, BLACK
+        WHITE, BLACK;
+
+        public PieceColor getOpposite() {
+            return this == WHITE ? BLACK : WHITE;
+        }
+
+        public static PieceColor from(Color color) {
+            return color == Color.BLACK ? BLACK : WHITE;
+        }
+
+        public boolean isWhite() {
+            return this == WHITE;
+        }
+
+        public Color getColor() {
+            return this == WHITE ? Color.WHITE : Color.BLACK;
+        }
     }
 }

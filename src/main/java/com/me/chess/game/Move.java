@@ -36,7 +36,7 @@ public class Move {
 
     @SuppressWarnings("DataFlowIssue")
     public void move() throws IllegalMoveException {
-        if (!this.isLegal()) throw new IllegalMoveException("Move isn't legal");
+        if (!this.isLegal() || this.isKingChecked(this.from.getPiece().color) && !(this.from.getPiece() instanceof King)) throw new IllegalMoveException("Move isn't legal");
         Piece fromPiece = this.from.getPiece();
 
         // Update the moves counter
@@ -52,12 +52,12 @@ public class Move {
         if (fromPiece instanceof Pawn pawn && this.to.getPosition().y == pawn.EIGHT_RANK) {
             this.createPopupForPromotion(pawn);
         } else {
-            this.movePart2(fromPiece);
+            this.movesThePiece(fromPiece);
         }
 
     }
 
-    private void movePart2(Piece fromPiece) {
+    private void movesThePiece(Piece fromPiece) {
         // Handles special moves
         this.board.getPieces().forEach(p -> p.onMove(this));
 
@@ -100,11 +100,11 @@ public class Move {
             final int index = i;
             child.setOnMouseClicked(event -> {
                 // Changes the piece
-                Piece promotedPiece = pieceTypes[index].getInstance(this.from, pawn.color == Piece.PieceColor.WHITE ? Color.WHITE : Color.BLACK);
+                Piece promotedPiece = pieceTypes[index].getInstance(this.from, pawn.color.getColor());
                 pawn.delete();
 
                 this.board.container.getChildren().removeAll(rectangle, pieces);
-                this.movePart2(promotedPiece);
+                this.movesThePiece(promotedPiece);
             });
         }
 
@@ -116,8 +116,18 @@ public class Move {
         return this.board.totalMoves;
     }
 
+    public boolean isKingChecked(Piece.PieceColor color) {
+        return this.board.getPiecesofType(King.class)
+                .stream()
+                .filter(k -> k.color == color)
+                .toList()
+                .getFirst()
+                .isChecked(this.board.getAllLegalMovesOfColor(color.getOpposite()));
+    }
+
     @Override
     public String toString() {
-        return String.format("Move(%s, %s)", this.from, this.to);
+        //return String.format("Move(%s -> %s)", this.from, this.to);
+        return String.format("Move(%s -> %s)", this.from.getPosition(), this.to.getPosition());
     }
 }

@@ -1,5 +1,6 @@
 package com.me.chess.board;
 
+import com.me.chess.pieces.impl.King;
 import com.me.chess.pieces.impl.Pawn;
 import com.me.chess.pieces.Piece;
 import com.me.chess.pieces.impl.Rook;
@@ -41,37 +42,49 @@ public class Board {
                 this.squares.add(square);
                 this.grid.add(square.container, x, Math.abs(y - 8));
 
-                square.onClick(() -> {
-                    long startMs = System.currentTimeMillis();
-                    if (this.move.from == null) { // If we select a piece
-                        if (square.isEmpty()) return;
-                        square.toggleSelect();
-
-                        if (square.getPiece() != null) square.toggleShowingAttacks();
-
-                        this.move.from = square;
-                    } else {
-                        if (this.move.from == square) { // If we clicked the on the same square a second time (to unselect)
-                            this.move.from.toggleShowingAttacks();
-                            this.move.from = null;
-                            square.resetState();
-                            return;
-                        }
-
-                        if (!square.getPosition().isOppositeColorPieceOrEmpty(this, this.move.from.getPiece())
-                                || !this.move.from.getPiece().getLegalMoves().contains(square.getPosition())) return; // If we try to move to one of our pieces or to a non legal move
-
-                        // If we move
-                        this.move.from.toggleShowingAttacks();
-                        this.move.to = square;
-                        this.move.move();
-                    }
-                    System.out.println(System.currentTimeMillis() - startMs + "ms");
-                });
+                square.onClick(() -> squareClick(square));
             }
         }
 
         this.addPieces();
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    private void squareClick(Square square) {
+        long startMs = System.currentTimeMillis();
+
+        if (this.move.from == null) { // If we select a piece
+            if (square.isEmpty()) return;
+            square.toggleSelect();
+
+            if (this.isKingChecked(square.getPiece().color) && !(square.getPiece() instanceof King)) return; // Return if we're checked
+            if (square.getPiece() != null) square.toggleShowingAttacks();
+
+            this.move.from = square;
+        } else {
+            if (this.move.from == square) { // If we clicked the on the same square a second time (to unselect)
+                this.move.from.toggleShowingAttacks();
+                this.move.from = null;
+                square.resetState();
+                return;
+            }
+
+            if (!square.getPosition().isOppositeColorPieceOrEmpty(this, this.move.from.getPiece()) ||
+                    !this.move.from.getPiece().getLegalMoves().contains(square.getPosition()) ||
+                    this.isKingChecked(this.move.from.getPiece().color) && !(this.move.from.getPiece() instanceof King)) return; // If we try to move to one of our pieces or to a non-legal
+
+            // If we move
+            this.move.from.toggleShowingAttacks();
+            this.move.to = square;
+
+            this.move.move();
+        }
+
+        System.out.println(System.currentTimeMillis() - startMs + "ms");
+    }
+
+    public boolean isKingChecked(Piece.PieceColor color) {
+        return new Move(this, null, null).isKingChecked(color);
     }
 
     private void addPieces() {
@@ -136,5 +149,23 @@ public class Board {
                 .filter(clazz::isInstance)
                 .map(clazz::cast)
                 .toList();
+    }
+
+    /**
+     * DOES NOT INCLUDE THE KING !!
+     */
+    public List<Point> getAllLegalMovesOfColor(Piece.PieceColor color) {
+        List<Point> allPiecesLegalMoves = new ArrayList<>();
+
+        List<Piece> pieces = this.getPieces()
+                .stream()
+                .filter(piece -> piece.color == color && !(piece instanceof King))
+                .toList();
+
+        for (Piece piece : pieces) {
+            if (!(piece instanceof King)) allPiecesLegalMoves.addAll(piece.getLegalMoves());
+        }
+
+        return allPiecesLegalMoves;
     }
 }

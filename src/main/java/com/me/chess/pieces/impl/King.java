@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class King extends Piece {
     public King(Square square, Color color) {
@@ -46,7 +47,37 @@ public class King extends Piece {
             if (rook.hasntMoved() && this.isEmptyInRange(Direction.LEFT, 2)) legalMoves.add(this.getPosition().addX(-2));
         }
 
-        return legalMoves;
+
+
+
+        // KING CHECKS
+        List<Point> allPiecesLegalMoves = this.getAllPiecesLegalMoves();
+        boolean checked = this.isChecked(allPiecesLegalMoves);
+
+
+        return !checked
+                ? legalMoves
+                : legalMoves
+                            .stream()
+                            .filter(p -> !allPiecesLegalMoves.contains(p)) // Remove points that are attacked by a piece from the legal moves
+                            .toList();
+    }
+
+    /**
+     * ONLY THE LEGAL MOVES OF THIS COLOR AND THAT ISN'T A KING
+     */
+    public List<Point> getAllPiecesLegalMoves() {
+        return this.board.getAllLegalMovesOfColor(this.color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE);
+    }
+
+    public boolean isChecked(List<Point> allPiecesLegalMoves) {
+        for (Point p : allPiecesLegalMoves) {
+            if (p.equals(this.getPosition())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override

@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pawn extends Piece {
-    public final int ONE = this.color == Piece.PieceColor.WHITE ? 1 : -1;
-    public final int TWO = this.color == Piece.PieceColor.WHITE ? 2 : -2;
-    public final int START_RANK = this.color == Piece.PieceColor.WHITE ? 2 : 7;
+    public final int ONE = this.color.isWhite() ? 1 : -1;
+    public final int TWO = this.color.isWhite() ? 2 : -2;
+    public final int START_RANK = this.color.isWhite() ? 2 : 7;
     public final int EIGHT_RANK = START_RANK == 2 ? 8 : 1;
-    public final Direction DIRECTION = this.color == Piece.PieceColor.WHITE ? Direction.UP : Direction.DOWN;
+    public final Direction DIRECTION = this.color.isWhite() ? Direction.UP : Direction.DOWN;
     private boolean canBeCapturedEnPassant = false;
     private int capturableEnPassantMove = -1;
 
