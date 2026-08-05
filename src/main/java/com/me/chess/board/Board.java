@@ -5,8 +5,8 @@ import com.me.chess.pieces.Piece;
 import com.me.chess.pieces.impl.Rook;
 import com.me.chess.vectors.Point;
 import com.me.chess.game.Move;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -17,12 +17,14 @@ import static com.me.chess.pieces.Piece.PieceType.*;
 
 public class Board {
     public List<Square> squares;
+    public StackPane container;
     public GridPane grid;
     public Move move;
     public int totalMoves;
 
-    public Board(GridPane grid) {
+    public Board(StackPane container, GridPane grid) {
         this.grid = grid;
+        this.container = container;
         this.squares = new ArrayList<>();
         this.move = new Move(this, null, null);
         this.totalMoves = 0;
@@ -37,9 +39,10 @@ public class Board {
                 //square.addElement(new Label(String.format("(%s, %s) %d", x, y, squares.size())));
 
                 this.squares.add(square);
-                this.grid.add(square.content, x, Math.abs(y - 8));
+                this.grid.add(square.container, x, Math.abs(y - 8));
 
                 square.onClick(() -> {
+                    long startMs = System.currentTimeMillis();
                     if (this.move.from == null) { // If we select a piece
                         if (square.isEmpty()) return;
                         square.toggleSelect();
@@ -63,6 +66,7 @@ public class Board {
                         this.move.to = square;
                         this.move.move();
                     }
+                    System.out.println(System.currentTimeMillis() - startMs + "ms");
                 });
             }
         }

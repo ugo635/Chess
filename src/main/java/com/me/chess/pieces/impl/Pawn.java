@@ -13,7 +13,8 @@ import java.util.List;
 public class Pawn extends Piece {
     public final int ONE = this.color == Piece.PieceColor.WHITE ? 1 : -1;
     public final int TWO = this.color == Piece.PieceColor.WHITE ? 2 : -2;
-    public final int START_RANK = (this.color == Piece.PieceColor.WHITE ? 2 : 7);
+    public final int START_RANK = this.color == Piece.PieceColor.WHITE ? 2 : 7;
+    public final int EIGHT_RANK = START_RANK == 2 ? 8 : 1;
     public final Direction DIRECTION = this.color == Piece.PieceColor.WHITE ? Direction.UP : Direction.DOWN;
     private boolean canBeCapturedEnPassant = false;
     private int capturableEnPassantMove = -1;
@@ -48,13 +49,14 @@ public class Pawn extends Piece {
      * Handles the En Passant
      */
     @Override
+    @SuppressWarnings("DataFlowIssue")
     public void onMove(Move move) {
         // Handle the En Passant
         if (move.from.getPiece() instanceof Pawn pawn) {
             if (pawn.canEnPassantOnTheLeft()) {
-                pawn.getPosition().addX(-1).getPiece(this.board).empty();
+                pawn.getPosition().addX(-1).getPiece(this.board).delete();
             } else if (pawn.canEnPassantOnTheRight()) {
-                pawn.getPosition().addX(1).getPiece(this.board).empty();
+                pawn.getPosition().addX(1).getPiece(this.board).delete();
             }
         }
 
@@ -65,6 +67,7 @@ public class Pawn extends Piece {
         } else {
             this.canBeCapturedEnPassant = false;
         }
+
     }
 
     public boolean canBeCapturedEnPassant() {

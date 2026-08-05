@@ -34,11 +34,26 @@ public abstract class Piece {
         this.render = getRender();
     }
 
-    protected ImageView getRender() {
+    public ImageView getRender() {
         ImageView render = new ImageView(
                 new Image(
                         Objects.requireNonNull(getClass().getResource(
                                 String.format("/pieces/%s_%s.png", this.color, this.piece) // Ex: WHITE_KING
+                        )).toString()
+                )
+        );
+
+        render.setFitHeight(SQUARE_SIZE);
+        render.setFitWidth(SQUARE_SIZE);
+
+        return render;
+    }
+
+    public static ImageView getRender(PieceColor color, String pieceName) {
+        ImageView render = new ImageView(
+                new Image(
+                        Objects.requireNonNull(Piece.class.getResource(
+                                String.format("/pieces/%s_%s.png", color, pieceName) // Ex: WHITE_KING
                         )).toString()
                 )
         );
@@ -65,9 +80,9 @@ public abstract class Piece {
         return this.move == 0;
     }
 
-    public void empty() {
+    public void delete() {
         this.square.empty();
-        this.square.content.getChildren().remove(this.render);
+        this.square.container.getChildren().remove(this.render);
         this.square = null;
     }
 
@@ -111,6 +126,11 @@ public abstract class Piece {
     public void onMove(Move move) {}
 
     public abstract List<Point> getLegalMoves();
+
+    @Override
+    public String toString() {
+        return String.format("Piece(Type(%s), Color(%s), %s)", this.piece, this.color, this.square);
+    }
 
     public enum PieceType {
         KING, QUEEN, ROOK, KNIGHT, BISHOP, PAWN;

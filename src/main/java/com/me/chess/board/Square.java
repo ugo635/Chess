@@ -3,6 +3,7 @@ package com.me.chess.board;
 import com.me.chess.pieces.Piece;
 import com.me.chess.vectors.Point;
 import javafx.scene.Node;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -15,7 +16,7 @@ public class Square {
     public int y;
     public Board board;
     public Background background;
-    public StackPane content;
+    public StackPane container;
     public Highlight highlight;
     private State state;
     private @Nullable Piece piece;
@@ -28,12 +29,12 @@ public class Square {
         this.x = x;
         this.y = y;
 
-        this.content = new StackPane();
-        this.content.getChildren().add(background.element);
+        this.container = new StackPane();
+        this.container.getChildren().add(background.element);
     }
 
     public void onClick(Runnable runnable) {
-        this.content.setOnMouseClicked(event -> runnable.run());
+        this.container.setOnMouseClicked(event -> runnable.run());
     }
 
     public void setState(State state) {
@@ -43,7 +44,7 @@ public class Square {
 
     public void setPiece(@Nullable Piece piece) {
         this.piece = piece;
-        if (piece != null) this.piece.render(this.content);
+        if (piece != null) this.piece.render(this.container);
     }
 
     /**
@@ -53,16 +54,24 @@ public class Square {
         this.setPiece(null);
     }
 
+    /**
+     * Remove the piece on this square & remove the square from the piece.
+     */
+    public void clear() {
+        this.getPiece().setSquare(null);
+        this.setPiece(null);
+    }
+
     public @Nullable Piece getPiece() {
         return this.piece;
     }
 
     public void addElement(Node element) {
-        this.content.getChildren().add(element);
+        this.container.getChildren().add(element);
     }
 
     public void removeElement(Node element) {
-        this.content.getChildren().remove(element);
+        this.container.getChildren().remove(element);
     }
 
     public boolean isEmpty() {

@@ -1,12 +1,20 @@
 package com.me.chess.game;
 
 import com.me.chess.board.Board;
-import com.me.chess.pieces.impl.Pawn;
+import com.me.chess.pieces.impl.*;
 import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
 import com.me.chess.pieces.Piece;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import java.util.List;
+
+import static com.me.chess.game.ChessGame.SQUARE_SIZE;
 
 public class Move {
     public final Board board;
@@ -22,13 +30,8 @@ public class Move {
     @SuppressWarnings("DataFlowIssue")
     public boolean isLegal() {
         List<Point> legalMoves = from.getPiece().getLegalMoves();
-        boolean isLegal = legalMoves.contains(to.getPosition());
 
-        //System.out.println("Legal moves:" + legalMoves);
-        //System.out.println("From: " + from.getPosition());
-        //System.out.println("To:" + to.getPosition());
-
-        return isLegal;
+        return legalMoves.contains(to.getPosition());
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -42,10 +45,20 @@ public class Move {
 
         // Remove the piece from the destination square if exists
         if (!this.to.isEmpty()) {
-            this.to.getPiece().empty();
+            this.to.getPiece().delete();
         }
 
-        // Mark the pawn capturable En Passant if it just moved 2 squares
+        // Promotion
+        if (fromPiece instanceof Pawn pawn && this.to.getPosition().y == pawn.EIGHT_RANK) {
+            this.createPopupForPromotion(pawn);
+        } else {
+            this.movePart2(fromPiece);
+        }
+
+    }
+
+    private void movePart2(Piece fromPiece) {
+        // Handles special moves
         this.board.getPieces().forEach(p -> p.onMove(this));
 
         // Adds the piece to the destination square and remove the piece from the start square
@@ -61,6 +74,42 @@ public class Move {
         // Resets everything to null
         this.from = null;
         this.to = null;
+    }
+
+    private void createPopupForPromotion(Pawn pawn) {
+        Rectangle rectangle = new Rectangle();
+        rectangle.setWidth(SQUARE_SIZE * 5);
+        rectangle.setHeight(SQUARE_SIZE * 1.25);
+        rectangle.setFill(Color.WHITE);
+
+        ImageView queen = Queen.getRender(Piece.PieceColor.WHITE, "QUEEN");
+        ImageView knight = Knight.getRender(Piece.PieceColor.WHITE, "KNIGHT");
+        ImageView rook = Rook.getRender(Piece.PieceColor.WHITE, "ROOK");
+        ImageView bishop = Bishop.getRender(Piece.PieceColor.WHITE, "BISHOP");
+
+        HBox pieces = new HBox(10, queen, knight, rook, bishop);
+        pieces.setAlignment(Pos.CENTER);
+
+        final Piece.PieceType[] pieceTypes = new Piece.PieceType[] { Piece.PieceType.QUEEN, Piece.PieceType.KNIGHT, Piece.PieceType.ROOK, Piece.PieceType.BISHOP };
+
+        // Handles clicks & style
+        for (int i = 0; i < pieces.getChildren().size(); i++) {
+            Node child = pieces.getChildren().get(i);
+            child.setStyle("-fx-effect: dropshadow(gaussian, rgb(0,0,0), 15, 0.3, 0, 6); -fx-cursor: hand");
+
+            final int index = i;
+            child.setOnMouseClicked(event -> {
+                // Changes the piece
+                Piece promotedPiece = pieceTypes[index].getInstance(this.from, pawn.color == Piece.PieceColor.WHITE ? Color.WHITE : Color.BLACK);
+                pawn.delete();
+
+                this.board.container.getChildren().removeAll(rectangle, pieces);
+                this.movePart2(promotedPiece);
+            });
+        }
+
+        this.board.container.getChildren().addAll(rectangle, pieces);
+
     }
 
     public int getTotalMove() {
