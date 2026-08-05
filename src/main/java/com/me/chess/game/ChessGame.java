@@ -9,8 +9,4 @@ public class ChessGame {
     public GridPane grid = new GridPane();
     public Scene scene = new Scene(grid);
     public Board board = new Board(grid);
-
-    public ChessGame() {
-        //grid.setGridLinesVisible(true);
-    }
 }

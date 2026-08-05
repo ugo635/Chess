@@ -46,6 +46,9 @@ public class Square {
         if (piece != null) this.piece.render(this.content);
     }
 
+    /**
+     * Remove the piece on this square.
+     */
     public void empty() {
         this.setPiece(null);
     }
@@ -63,7 +66,7 @@ public class Square {
     }
 
     public boolean isEmpty() {
-        return piece == null;
+        return this.getPiece() == null;
     }
 
     public Point getPosition() {
@@ -86,6 +89,7 @@ public class Square {
         this.setState(State.NONE);
     }
 
+    @SuppressWarnings("DataFlowIssue")
     public void toggleShowingAttacks() {
         // Can't be null cuz if we got here it's that it passed the null check in the Board constructor
         this.getPiece()

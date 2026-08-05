@@ -5,4 +5,8 @@ module Chess.main {
 
     exports com.me.chess;
     exports com.me.chess.game;
+    exports com.me.chess.board;
+    exports com.me.chess.vectors;
+    exports com.me.chess.pieces.impl;
+    exports com.me.chess.pieces;
 }

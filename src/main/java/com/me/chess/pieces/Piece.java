@@ -1,6 +1,7 @@
 package com.me.chess.pieces;
 
 import com.me.chess.board.Board;
+import com.me.chess.game.Move;
 import com.me.chess.vectors.Direction;
 import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
@@ -65,6 +66,7 @@ public abstract class Piece {
     }
 
     public void empty() {
+        this.square.empty();
         this.square.content.getChildren().remove(this.render);
         this.square = null;
     }
@@ -73,16 +75,40 @@ public abstract class Piece {
         return this.square.getPosition();
     }
 
-    public boolean isEmptyInRange(Direction direction, int range) {
+    protected boolean isEmptyInRange(Direction direction, int range) {
         Point diff = direction.getDiff();
 
         // If there's one square that isn't empty it will return false
         for (int i = 1; i < 9 && i <= range; i++) {
-            if (!this.getPosition().add(diff.times(i)).isAnEmptySquare(this.board)) return false;
+            Point newPoint = this.getPosition().add(diff.times(i));
+            if (newPoint.x < 1 || newPoint.x > 8) break;
+            if (newPoint.y < 1 || newPoint.y > 8) break;
+
+            if (!newPoint.isAnEmptySquare(this.board)) return false;
         }
 
         return true;
     }
+
+    protected int isEmptyInRange(Direction direction) {
+        for (int i = 1; i < 9; i++) {
+            Point diff = direction.getDiff();
+            Point newPoint = this.getPosition().add(diff.times(i));
+            if (newPoint.x < 1 || newPoint.x > 9) return i - 1;
+            if (newPoint.y < 1 || newPoint.y > 9) return i - 1;
+
+            if (newPoint.isOppositeColorPiece(this.board, this)) return i;
+            if (!newPoint.isAnEmptySquare(this.board)) return i - 1;
+        }
+
+        return -1;
+    }
+
+    public boolean isOppositeColor(Piece otherPiece) {
+        return this.color != otherPiece.color;
+    }
+
+    public void onMove(Move move) {}
 
     public abstract List<Point> getLegalMoves();
 

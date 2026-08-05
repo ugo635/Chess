@@ -1,39 +1,22 @@
 package com.me.chess.vectors;
 
 public enum Direction {
-    UP, DOWN, RIGHT, LEFT,
-    TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT;
+    UP(new Point(0, 1)),
+    DOWN(new Point(0, -1)),
+    RIGHT(new Point(1, 0)),
+    LEFT(new Point(-1, 0)),
+    TOP_LEFT(new Point(-1, 1)),
+    TOP_RIGHT(new Point(1, 1)),
+    BOTTOM_RIGHT(new Point(1, -1)),
+    BOTTOM_LEFT(new Point(-1, -1));
+
+    private Point diff;
+
+    Direction(Point diff) {
+        this.diff = diff;
+    }
 
     public Point getDiff() {
-        int dx = 0;
-        int dy = 0;
-
-        switch (this) {
-            case UP -> dy++;
-            case DOWN -> dy--;
-            case RIGHT -> dx++;
-            case LEFT -> dx--;
-            case TOP_LEFT -> {
-                dx--;
-                dy++;
-            }
-
-            case TOP_RIGHT -> {
-                dx++;
-                dy++;
-            }
-
-            case BOTTOM_RIGHT -> {
-                dx++;
-                dx--;
-            }
-
-            default -> {
-                dx--;
-                dy--;
-            }
-        }
-
-        return new Point(dx, dy);
+        return new Point(this.diff);
     }
 }

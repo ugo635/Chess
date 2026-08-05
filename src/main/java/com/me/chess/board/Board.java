@@ -2,13 +2,16 @@ package com.me.chess.board;
 
 import com.me.chess.pieces.impl.Pawn;
 import com.me.chess.pieces.Piece;
+import com.me.chess.pieces.impl.Rook;
 import com.me.chess.vectors.Point;
 import com.me.chess.game.Move;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.me.chess.pieces.Piece.PieceType.*;
 
@@ -16,11 +19,13 @@ public class Board {
     public List<Square> squares;
     public GridPane grid;
     public Move move;
+    public int totalMoves;
 
     public Board(GridPane grid) {
         this.grid = grid;
         this.squares = new ArrayList<>();
         this.move = new Move(this, null, null);
+        this.totalMoves = 0;
 
         Color light = new Color(0.941f, 0.851f, 0.710f, 1.0f);
         Color dark = new Color(0.706f, 0.533f, 0.392f, 1.0f);
@@ -44,10 +49,14 @@ public class Board {
                         this.move.from = square;
                     } else {
                         if (this.move.from == square) { // If we clicked the on the same square a second time (to unselect)
+                            this.move.from.toggleShowingAttacks();
                             this.move.from = null;
                             square.resetState();
                             return;
                         }
+
+                        if (!square.getPosition().isOppositeColorPieceOrEmpty(this, this.move.from.getPiece())
+                                || !this.move.from.getPiece().getLegalMoves().contains(square.getPosition())) return; // If we try to move to one of our pieces or to a non legal move
 
                         // If we move
                         this.move.from.toggleShowingAttacks();
@@ -62,7 +71,7 @@ public class Board {
     }
 
     private void addPieces() {
-        // Add the paws
+        // Add the pawns
         for (int i = 8; i < 56; i++) {
             if (i == 16) {
                 i = 47;
@@ -84,6 +93,11 @@ public class Board {
             Square square = this.getSquareAt(i);
             square.setPiece(pieceOrder.get(i % 8).getInstance(square, i < 8 ? Color.WHITE : Color.BLACK));
         }
+
+        for (int i = 0; i < 4; i++) {
+            List<Rook> rooks = this.getPiecesofType(Rook.class);
+            rooks.get(i).isRightRook = i % 2 == 1;
+        }
     }
 
     public Square getSquareAt(int x, int y) {
@@ -100,5 +114,23 @@ public class Board {
 
     public Square getSquareAt(int index) {
         return this.squares.get(index);
+    }
+
+    public List<Piece> getPieces() {
+        return this.squares
+                .stream()
+                .map(Square::getPiece)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    public <T extends Piece> List<T> getPiecesofType(Class<T> clazz) {
+        return this.squares
+                .stream()
+                .map(Square::getPiece)
+                .filter(Objects::nonNull)
+                .filter(clazz::isInstance)
+                .map(clazz::cast)
+                .toList();
     }
 }
