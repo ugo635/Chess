@@ -1,71 +1,45 @@
 package com.me.chess.pieces;
 
 import com.me.chess.board.Board;
-import com.me.chess.game.Move;
+import com.me.chess.game.movement.Move;
+import com.me.chess.game.renderer.Renderable;
+import com.me.chess.game.renderer.impl.PieceRenderer;
 import com.me.chess.vectors.Direction;
 import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
 import com.me.chess.pieces.impl.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 import java.util.List;
-import java.util.Objects;
 
-import static com.me.chess.game.ChessGame.SQUARE_SIZE;
-
-public abstract class Piece {
-    public final ImageView render;
-    public final PieceType piece;
+public abstract class Piece implements Renderable {
+    public final PieceType pieceType;
+    public PieceRenderer renderer;
     public final PieceColor color;
     protected final Board board;
     protected Square square;
     public int move;
 
     public Piece(Square square, Color color) {
-        this.piece = PieceType.valueOf(getClass().getSimpleName().toUpperCase());
+        this.pieceType = PieceType.valueOf(getClass().getSimpleName().toUpperCase());
         this.color = PieceColor.from(color);
         this.move = 0;
         this.square = square;
         this.board = square.board;
-        this.render = getRender();
     }
 
-    public ImageView getRender() {
-        ImageView render = new ImageView(
-                new Image(
-                        Objects.requireNonNull(getClass().getResource(
-                                String.format("/pieces/%s_%s.png", this.color, this.piece) // Ex: WHITE_KING
-                        )).toString()
-                )
-        );
-
-        render.setFitHeight(SQUARE_SIZE);
-        render.setFitWidth(SQUARE_SIZE);
-
-        return render;
+    @Override
+    public void render() {
+        if (this.renderer == null) this.renderer = new PieceRenderer(this);
+        this.renderer.render();
     }
 
-    public static ImageView getRender(PieceColor color, String pieceName) {
-        ImageView render = new ImageView(
-                new Image(
-                        Objects.requireNonNull(Piece.class.getResource(
-                                String.format("/pieces/%s_%s.png", color, pieceName) // Ex: WHITE_KING
-                        )).toString()
-                )
-        );
+    public void update() {
+        if (this.renderer == null) {
+            this.renderer = new PieceRenderer(this);
+            this.renderer.render();
+        }
 
-        render.setFitHeight(SQUARE_SIZE);
-        render.setFitWidth(SQUARE_SIZE);
-
-        return render;
-    }
-
-    public void render(StackPane content) {
-        content.getChildren().add(this.render);
     }
 
     public Square getSquare() {
@@ -73,6 +47,7 @@ public abstract class Piece {
     }
 
     public void setSquare(Square square) {
+        if (this.renderer != null && this.square != null) this.renderer.update(this.square, square);
         this.square = square;
     }
 
@@ -82,7 +57,7 @@ public abstract class Piece {
 
     public void delete() {
         this.square.empty();
-        this.square.container.getChildren().remove(this.render);
+        if (this.renderer != null) this.square.renderer.clearElements();
         this.square = null;
     }
 
@@ -129,7 +104,7 @@ public abstract class Piece {
 
     @Override
     public String toString() {
-        return String.format("Piece(Type(%s), Color(%s), %s)", this.piece, this.color, this.square);
+        return String.format("Piece(Type(%s), Color(%s), %s)", this.pieceType, this.color, this.square);
     }
 
     public enum PieceType {

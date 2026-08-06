@@ -1,6 +1,8 @@
-package com.me.chess.game;
+package com.me.chess.game.movement;
 
 import com.me.chess.board.Board;
+import com.me.chess.game.IllegalMoveException;
+import com.me.chess.game.renderer.impl.PieceRenderer;
 import com.me.chess.pieces.impl.*;
 import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
@@ -84,10 +86,10 @@ public class Move {
         rectangle.setHeight(SQUARE_SIZE * 1.25);
         rectangle.setFill(Color.WHITE);
 
-        ImageView queen = Queen.getRender(Piece.PieceColor.WHITE, "QUEEN");
-        ImageView knight = Knight.getRender(Piece.PieceColor.WHITE, "KNIGHT");
-        ImageView rook = Rook.getRender(Piece.PieceColor.WHITE, "ROOK");
-        ImageView bishop = Bishop.getRender(Piece.PieceColor.WHITE, "BISHOP");
+        ImageView queen = PieceRenderer.getRender(Piece.PieceColor.WHITE, "QUEEN");
+        ImageView knight = PieceRenderer.getRender(Piece.PieceColor.WHITE, "KNIGHT");
+        ImageView rook = PieceRenderer.getRender(Piece.PieceColor.WHITE, "ROOK");
+        ImageView bishop = PieceRenderer.getRender(Piece.PieceColor.WHITE, "BISHOP");
 
         HBox pieces = new HBox(10, queen, knight, rook, bishop);
         pieces.setAlignment(Pos.CENTER);
@@ -105,12 +107,12 @@ public class Move {
                 Piece promotedPiece = pieceTypes[index].getInstance(this.from, pawn.color.getColor());
                 pawn.delete();
 
-                this.board.container.getChildren().removeAll(rectangle, pieces);
+                this.board.game.renderer.container.getChildren().removeAll(rectangle, pieces);
                 this.movesThePiece(promotedPiece);
             });
         }
 
-        this.board.container.getChildren().addAll(rectangle, pieces);
+        this.board.game.renderer.container.getChildren().addAll(rectangle, pieces);
 
     }
 

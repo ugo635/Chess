@@ -1,22 +1,19 @@
 package com.me.chess.board;
 
+import com.me.chess.game.renderer.Renderable;
+import com.me.chess.game.renderer.impl.SquareRenderer;
 import com.me.chess.pieces.Piece;
 import com.me.chess.vectors.Point;
 import javafx.scene.Node;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import org.jetbrains.annotations.Nullable;
 
-import static com.me.chess.game.ChessGame.SQUARE_SIZE;
-
-public class Square {
+public class Square implements Renderable {
     public int x;
     public int y;
     public Board board;
-    public Background background;
-    public StackPane container;
+    public Color backgroundColor;
+    public SquareRenderer renderer;
     public Highlight highlight;
     private State state;
     private @Nullable Piece piece;
@@ -25,16 +22,17 @@ public class Square {
         this.board = board;
         this.state = State.NONE;
         this.highlight = new Highlight(this);
-        this.background = new Background(color);
+        this.backgroundColor = color;
+        this.renderer = null;
         this.x = x;
         this.y = y;
 
-        this.container = new StackPane();
-        this.container.getChildren().add(background.element);
     }
 
-    public void onClick(Runnable runnable) {
-        this.container.setOnMouseClicked(event -> runnable.run());
+    @Override
+    public void render() {
+        if (this.renderer == null) this.renderer = new SquareRenderer(this);
+        this.renderer.render();
     }
 
     public void setState(State state) {
@@ -44,7 +42,7 @@ public class Square {
 
     public void setPiece(@Nullable Piece piece) {
         this.piece = piece;
-        if (piece != null) this.piece.render(this.container);
+        if (this.getPiece() != null && this.renderer != null) this.renderer.update();
     }
 
     /**
@@ -64,14 +62,6 @@ public class Square {
 
     public @Nullable Piece getPiece() {
         return this.piece;
-    }
-
-    public void addElement(Node element) {
-        this.container.getChildren().add(element);
-    }
-
-    public void removeElement(Node element) {
-        this.container.getChildren().remove(element);
     }
 
     public boolean isEmpty() {
@@ -107,14 +97,6 @@ public class Square {
                 .map(this.board::getSquareAt)
                 .forEach(Square::toggleLegalMove);
 
-    }
-
-    public static class Background {
-        public Rectangle element;
-
-        public Background(Color color) {
-            this.element = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, color);
-        }
     }
 
     public String toString() {

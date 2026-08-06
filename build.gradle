@@ -23,7 +23,3 @@ application {
     mainClass = "com.me.chess.Main"
     mainModule = "chess"
 }
-
-run {
-    jvmArgs += "--enable-native-access=javafx.graphics"
-}

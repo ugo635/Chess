@@ -1,6 +1,6 @@
 package com.me.chess.pieces.impl;
 
-import com.me.chess.game.Move;
+import com.me.chess.game.movement.Move;
 import com.me.chess.vectors.Direction;
 import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
@@ -9,7 +9,6 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class King extends Piece {
     public King(Square square, Color color) {

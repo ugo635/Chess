@@ -38,12 +38,12 @@ public class Highlight {
         if (newState == oldState) throw new IllegalStateUpdate(String.format("You shouldn't be able to update a state to the same one (%s)", newState));
 
         if (newState == Square.State.NONE) {
-            if (oldState == Square.State.SELECTED) this.square.removeElement(highlightedRectangle);
-            if (oldState == Square.State.LEGAL_MOVE) this.square.removeElement(highlightedLegalMoveRectangle);
+            if (oldState == Square.State.SELECTED) this.square.renderer.removeElement(highlightedRectangle);
+            if (oldState == Square.State.LEGAL_MOVE) this.square.renderer.removeElement(highlightedLegalMoveRectangle);
         } else if (newState == Square.State.SELECTED) {
-            this.square.addElement(highlightedRectangle);
+            this.square.renderer.addElement(highlightedRectangle);
         } else {
-            this.square.addElement(highlightedLegalMoveRectangle);
+            this.square.renderer.addElement(highlightedLegalMoveRectangle);
         }
     }
 }

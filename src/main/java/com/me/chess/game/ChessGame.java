@@ -1,14 +1,26 @@
 package com.me.chess.game;
 
 import com.me.chess.board.Board;
+import com.me.chess.game.renderer.impl.BoardRenderer;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
 public class ChessGame {
     public static final int SQUARE_SIZE = 100;
-    public GridPane grid = new GridPane();
-    public StackPane container = new StackPane(grid);
-    public Scene scene = new Scene(container);
-    public Board board = new Board(container, grid);
+    public GridPane grid;
+    public StackPane container;
+    public Scene scene;
+    public Board board;
+    public BoardRenderer renderer;
+
+    public ChessGame() {
+        this.grid = new GridPane();
+        this.container = new StackPane(grid);
+        this.scene = new Scene(container);
+        this.board = new Board(this);
+        this.renderer = new BoardRenderer(board, container, grid);
+
+        this.renderer.render();
+    }
 }
