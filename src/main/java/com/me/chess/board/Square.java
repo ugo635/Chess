@@ -14,14 +14,12 @@ public class Square implements Renderable {
     public Board board;
     public Color backgroundColor;
     public SquareRenderer renderer;
-    public Highlight highlight;
     private State state;
     private @Nullable Piece piece;
 
     public Square(Board board, Color color, int x, int y) {
         this.board = board;
         this.state = State.NONE;
-        this.highlight = new Highlight(this);
         this.backgroundColor = color;
         this.renderer = null;
         this.x = x;
@@ -36,7 +34,7 @@ public class Square implements Renderable {
     }
 
     public void setState(State state) {
-        this.highlight.updateState(state);
+        if (this.renderer != null) this.renderer.highlight.updateState(state);
         this.state = state;
     }
 
@@ -97,6 +95,14 @@ public class Square implements Renderable {
                 .map(this.board::getSquareAt)
                 .forEach(Square::toggleLegalMove);
 
+    }
+
+    public Square renderlessCopy(Board board) {
+        Square sq = new Square(board, this.backgroundColor, this.x, this.y);
+        sq.setState(this.getState());
+        sq.setPiece(this.getPiece() == null ? null : this.getPiece().renderlessCopy(sq));
+
+        return sq;
     }
 
     public String toString() {

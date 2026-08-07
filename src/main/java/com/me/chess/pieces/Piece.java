@@ -9,6 +9,7 @@ import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
 import com.me.chess.pieces.impl.*;
 import javafx.scene.paint.Color;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -107,6 +108,17 @@ public abstract class Piece implements Renderable {
         return String.format("Piece(Type(%s), Color(%s), %s)", this.pieceType, this.color, this.square);
     }
 
+    public @Nullable Piece renderlessCopy(Square square) {
+        Piece piece = this.pieceType.getInstance(square, this.color.getPaintColor());
+        piece.move = this.move;
+
+        return piece;
+    }
+
+    public char getChar() {
+        return this.pieceType == PieceType.KNIGHT ? 'N' : this.pieceType.toString().charAt(0);
+    }
+
     public enum PieceType {
         KING, QUEEN, ROOK, KNIGHT, BISHOP, PAWN;
 
@@ -137,7 +149,7 @@ public abstract class Piece implements Renderable {
             return this == WHITE;
         }
 
-        public Color getColor() {
+        public Color getPaintColor() {
             return this == WHITE ? Color.WHITE : Color.BLACK;
         }
     }

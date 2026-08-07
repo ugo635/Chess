@@ -2,18 +2,19 @@ package com.me.chess.game.renderer.impl;
 
 import com.me.chess.board.Board;
 import com.me.chess.board.Square;
+import com.me.chess.game.movement.Move;
+import com.me.chess.game.movement.MoveChecker;
 import com.me.chess.game.renderer.Renderer;
 import com.me.chess.pieces.Piece;
-import com.me.chess.pieces.impl.King;
 import com.me.chess.pieces.impl.Pawn;
 import com.me.chess.pieces.impl.Rook;
+import com.me.chess.vectors.Point;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 import java.util.List;
 
-import static com.me.chess.pieces.Piece.PieceType.*;
 import static com.me.chess.pieces.Piece.PieceType.BISHOP;
 import static com.me.chess.pieces.Piece.PieceType.KING;
 import static com.me.chess.pieces.Piece.PieceType.KNIGHT;
@@ -50,21 +51,44 @@ public class BoardRenderer implements Renderer {
             if (square.isEmpty()) return;
             square.toggleSelect();
 
-            if (this.board.isKingChecked(square.getPiece().color) && !(square.getPiece() instanceof King)) return; // Return if we're checked
+            this.board.move.from = square;
+
+            // Return if we're checked & can't block check
+            if (MoveChecker.isKingChecked(this.board, square.getPiece().color)) {
+                for (Point possibleMove : square.getPiece().getLegalMoves()) {
+                    boolean willBeChecked = MoveChecker.checkedAfterMove(new Move(this.board, square, possibleMove.getSquare(this.board)));
+                    if (!willBeChecked) {
+                        break;
+                    }
+
+                    this.board.move.from = null;
+                    return;
+                }
+            }
+
             if (square.getPiece() != null) square.toggleShowingAttacks();
 
-            this.board.move.from = square;
         } else {
-            if (this.board.move.from == square) { // If we clicked the on the same square a second time (to unselect)
+            // If we clicked the on the same square a second time (to unselect)
+            if (this.board.move.from == square) {
                 this.board.move.from.toggleShowingAttacks();
                 this.board.move.from = null;
                 square.resetState();
                 return;
             }
 
-            if (!square.getPosition().isOppositeColorPieceOrEmpty(this.board, this.board.move.from.getPiece()) ||
-                    !this.board.move.from.getPiece().getLegalMoves().contains(square.getPosition()) ||
-                    this.board.isKingChecked(this.board.move.from.getPiece().color) && !(this.board.move.from.getPiece() instanceof King)) return; // If we try to move to one of our pieces or to a non-legal
+            // If we try to move to one of our pieces or an illegal move
+            boolean notCapturable = !square.getPosition().isOppositeColorPieceOrEmpty(this.board, this.board.move.from.getPiece());
+            boolean illegalMove = !this.board.move.from.getPiece().getLegalMoves().contains(square.getPosition());
+            boolean kingChecked = MoveChecker.isKingChecked(this.board, this.board.move.from.getPiece().color);
+            boolean stillCheckedAfterMove = !MoveChecker.checkedAfterMove(new Move(this.board, this.board.move.from, square));
+
+            boolean invalidMove =
+                    notCapturable ||
+                            illegalMove ||
+                            ((!kingChecked && !stillCheckedAfterMove) || (kingChecked && !stillCheckedAfterMove));
+
+            if (invalidMove) return;
 
             // If we move
             this.board.move.from.toggleShowingAttacks();

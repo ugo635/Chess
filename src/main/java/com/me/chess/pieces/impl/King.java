@@ -49,10 +49,9 @@ public class King extends Piece {
 
 
 
-        // KING CHECKS
+        // KING CHECKS FILTERING
         List<Point> allPiecesLegalMoves = this.getAllPiecesLegalMoves();
-        boolean checked = this.isChecked(allPiecesLegalMoves);
-
+        boolean checked = this.isKingChecked(allPiecesLegalMoves);
 
         return !checked
                 ? legalMoves
@@ -62,14 +61,7 @@ public class King extends Piece {
                             .toList();
     }
 
-    /**
-     * ONLY THE LEGAL MOVES OF THIS COLOR AND THAT ISN'T A KING
-     */
-    public List<Point> getAllPiecesLegalMoves() {
-        return this.board.getAllLegalMovesOfColor(this.color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE);
-    }
-
-    public boolean isChecked(List<Point> allPiecesLegalMoves) {
+    public boolean isKingChecked(List<Point> allPiecesLegalMoves) {
         for (Point p : allPiecesLegalMoves) {
             if (p.equals(this.getPosition())) {
                 return true;
@@ -77,6 +69,13 @@ public class King extends Piece {
         }
 
         return false;
+    }
+
+    /**
+     * ONLY THE LEGAL MOVES OF THIS COLOR AND THAT ISN'T A KING
+     */
+    public List<Point> getAllPiecesLegalMoves() {
+        return this.board.getAllLegalMovesOfColor(this);
     }
 
     @Override

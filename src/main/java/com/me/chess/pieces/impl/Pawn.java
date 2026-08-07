@@ -1,6 +1,7 @@
 package com.me.chess.pieces.impl;
 
 import com.me.chess.game.movement.Move;
+import com.me.chess.game.movement.MoveChecker;
 import com.me.chess.vectors.Direction;
 import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;

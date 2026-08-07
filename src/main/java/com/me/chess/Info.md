@@ -5,3 +5,6 @@
 - Win
 
 ### BUG: While checked you can select multiple of your pieces**
+
+
+# Do ValidityChecker & Move.getFutureBoard()

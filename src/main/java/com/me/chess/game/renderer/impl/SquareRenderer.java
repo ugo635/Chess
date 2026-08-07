@@ -1,5 +1,6 @@
 package com.me.chess.game.renderer.impl;
 
+import com.me.chess.board.Highlight;
 import com.me.chess.board.Square;
 import com.me.chess.game.renderer.Renderer;
 import javafx.scene.Node;
@@ -11,10 +12,12 @@ import static com.me.chess.game.ChessGame.SQUARE_SIZE;
 public class SquareRenderer implements Renderer {
     public Square square;
     public StackPane container;
+    public Highlight highlight;
 
     public SquareRenderer(Square square) {
         this.square = square;
         this.container = new StackPane();
+        this.highlight = new Highlight(this.square);
     }
 
     @Override

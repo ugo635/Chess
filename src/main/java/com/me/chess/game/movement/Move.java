@@ -4,7 +4,6 @@ import com.me.chess.board.Board;
 import com.me.chess.game.IllegalMoveException;
 import com.me.chess.game.renderer.impl.PieceRenderer;
 import com.me.chess.pieces.impl.*;
-import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
 import com.me.chess.pieces.Piece;
 import javafx.geometry.Pos;
@@ -13,8 +12,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.List;
 
 import static com.me.chess.game.ChessGame.SQUARE_SIZE;
 
@@ -30,17 +27,8 @@ public class Move {
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public boolean isLegal() {
-        List<Point> legalMoves = from.getPiece().getLegalMoves();
-
-        boolean contains = legalMoves.contains(to.getPosition());
-        boolean checks = this.isKingChecked(this.from.getPiece().color) && !(this.from.getPiece() instanceof King);
-        return contains || checks;
-    }
-
-    @SuppressWarnings("DataFlowIssue")
     public void move() throws IllegalMoveException {
-        if (!this.isLegal()) throw new IllegalMoveException("Move isn't legal");
+        if (!MoveChecker.isLegal(this)) throw new IllegalMoveException("Move isn't legal");
         Piece fromPiece = this.from.getPiece();
 
         // Update the moves counter
@@ -104,7 +92,7 @@ public class Move {
             final int index = i;
             child.setOnMouseClicked(event -> {
                 // Changes the piece
-                Piece promotedPiece = pieceTypes[index].getInstance(this.from, pawn.color.getColor());
+                Piece promotedPiece = pieceTypes[index].getInstance(this.from, pawn.color.getPaintColor());
                 pawn.delete();
 
                 this.board.game.renderer.container.getChildren().removeAll(rectangle, pieces);
@@ -118,15 +106,6 @@ public class Move {
 
     public int getTotalMove() {
         return this.board.totalMoves;
-    }
-
-    public boolean isKingChecked(Piece.PieceColor color) {
-        return this.board.getPiecesofType(King.class)
-                .stream()
-                .filter(k -> k.color == color)
-                .toList()
-                .getFirst()
-                .isChecked(this.board.getAllLegalMovesOfColor(color.getOpposite()));
     }
 
     @Override

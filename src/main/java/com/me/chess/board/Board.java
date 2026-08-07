@@ -44,10 +44,6 @@ public class Board {
         }
     }
 
-    public boolean isKingChecked(Piece.PieceColor color) {
-        return new Move(this, null, null).isKingChecked(color);
-    }
-
     public Square getSquareAt(int x, int y) {
         return this.squares
                 .stream()
@@ -98,5 +94,53 @@ public class Board {
         }
 
         return allPiecesLegalMoves;
+    }
+
+    /**
+     * DOES NOT INCLUDE THE KING !!
+     */
+    public List<Point> getAllLegalMovesOfColor(Piece pieceToAvoid) {
+        List<Point> allPiecesLegalMoves = new ArrayList<>();
+
+        List<Piece> pieces = this.getPieces()
+                .stream()
+                .filter(piece -> piece.color == pieceToAvoid.color && !(piece == pieceToAvoid))
+                .toList();
+
+        for (Piece piece : pieces) {
+            if (!(piece instanceof King)) allPiecesLegalMoves.addAll(piece.getLegalMoves());
+        }
+
+        return allPiecesLegalMoves;
+    }
+
+    public Board copy() {
+        Board board = new Board(this.game);
+        board.totalMoves = this.totalMoves;
+
+        board.squares = this.squares
+                .stream()
+                .map(sq -> sq.renderlessCopy(board))
+                .toList();
+
+        return board;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 8; i > 0; i--) {
+            for (int j = 1; j < 9; j++) {
+                Square sq = this.getSquareAt(j, i);
+                sb
+                        .append((sq.getPiece() == null ? "0" : sq.getPiece().getChar()))
+                        .append(" | ");
+            }
+
+            sb.append("\n");
+
+        }
+
+        return sb.toString();
     }
 }
