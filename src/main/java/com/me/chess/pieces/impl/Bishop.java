@@ -15,7 +15,7 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public List<Point> getLegalMoves() {
+    public List<Point> getDefaultLegalMoves() {
         List<Point> legalMoves = new ArrayList<>();
 
         for (Direction dir : new Direction[] {Direction.TOP_RIGHT, Direction.TOP_LEFT, Direction.BOTTOM_RIGHT, Direction.BOTTOM_LEFT}) {

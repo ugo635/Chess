@@ -2,6 +2,7 @@ package com.me.chess.pieces;
 
 import com.me.chess.board.Board;
 import com.me.chess.game.movement.Move;
+import com.me.chess.game.movement.MoveChecker;
 import com.me.chess.game.renderer.Renderable;
 import com.me.chess.game.renderer.impl.PieceRenderer;
 import com.me.chess.vectors.Direction;
@@ -101,7 +102,16 @@ public abstract class Piece implements Renderable {
 
     public void onMove(Move move) {}
 
-    public abstract List<Point> getLegalMoves();
+    public abstract List<Point> getDefaultLegalMoves();
+
+    public final List<Point> getLegalMoves() {
+        return (this instanceof King)
+                ? this.getDefaultLegalMoves()
+                : this.getDefaultLegalMoves()
+                                            .stream()
+                                            .filter(point -> !MoveChecker.checkedAfterMove(new Move(this.board, this.getSquare(), point.getSquare(this.board))))
+                                            .toList();
+    }
 
     @Override
     public String toString() {

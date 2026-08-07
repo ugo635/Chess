@@ -14,7 +14,7 @@ public class Knight extends Piece {
     }
 
     @Override
-    public List<Point> getLegalMoves() {
+    public List<Point> getDefaultLegalMoves() {
         List<Point> legalMoves = new ArrayList<>();
 
         for (int i : new int[] {-2, 2}) {

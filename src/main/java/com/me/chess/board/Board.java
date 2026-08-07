@@ -90,7 +90,7 @@ public class Board {
                 .toList();
 
         for (Piece piece : pieces) {
-            if (!(piece instanceof King)) allPiecesLegalMoves.addAll(piece.getLegalMoves());
+            if (!(piece instanceof King)) allPiecesLegalMoves.addAll(piece.getDefaultLegalMoves());
         }
 
         return allPiecesLegalMoves;
@@ -108,7 +108,7 @@ public class Board {
                 .toList();
 
         for (Piece piece : pieces) {
-            if (!(piece instanceof King)) allPiecesLegalMoves.addAll(piece.getLegalMoves());
+            if (!(piece instanceof King)) allPiecesLegalMoves.addAll(piece.getDefaultLegalMoves());
         }
 
         return allPiecesLegalMoves;

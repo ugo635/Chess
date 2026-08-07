@@ -17,7 +17,7 @@ public class Rook extends Piece {
     }
 
     @Override
-    public List<Point> getLegalMoves() {
+    public List<Point> getDefaultLegalMoves() {
         List<Point> legalMoves = new ArrayList<>();
 
         for (Direction dir : new Direction[] {Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT}) {

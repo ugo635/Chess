@@ -15,7 +15,7 @@ public class Queen extends Piece {
     }
 
     @Override
-    public List<Point> getLegalMoves() {
+    public List<Point> getDefaultLegalMoves() {
         List<Point> legalMoves = new ArrayList<>();
 
         for (Direction dir : Direction.values()) {

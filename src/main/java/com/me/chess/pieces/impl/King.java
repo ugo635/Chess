@@ -16,7 +16,7 @@ public class King extends Piece {
     }
 
     @Override
-    public List<Point> getLegalMoves() {
+    public List<Point> getDefaultLegalMoves() {
         List<Point> legalMoves = new ArrayList<>();
 
         // Normal moves

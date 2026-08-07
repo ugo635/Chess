@@ -25,7 +25,7 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public List<Point> getLegalMoves() {
+    public List<Point> getDefaultLegalMoves() {
         List<Point> legalMoves = new ArrayList<>();
 
         // Going straight once if there's nothing
