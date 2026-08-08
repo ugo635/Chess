@@ -45,7 +45,7 @@ public class BoardRenderer implements Renderer {
 
     @SuppressWarnings("DataFlowIssue")
     private void squareClick(Square square) {
-        long startMs = System.currentTimeMillis();
+        //long startMs = System.currentTimeMillis();
 
         if (this.board.move.from == null) { // If we select a piece
             if (square.isEmpty()) return;
@@ -55,12 +55,17 @@ public class BoardRenderer implements Renderer {
 
             // Return if we're checked & can't block check
             if (MoveChecker.isKingChecked(this.board, square.getPiece().color)) {
+                boolean hasEscape = false;
+
                 for (Point possibleMove : square.getPiece().getLegalMoves()) {
                     boolean willBeChecked = MoveChecker.checkedAfterMove(new Move(this.board, square, possibleMove.getSquare(this.board)));
                     if (!willBeChecked) {
+                        hasEscape = true;
                         break;
                     }
+                }
 
+                if (!hasEscape) {
                     this.board.move.from = null;
                     return;
                 }
@@ -97,7 +102,7 @@ public class BoardRenderer implements Renderer {
             this.board.move.move();
         }
 
-        System.out.println(System.currentTimeMillis() - startMs + "ms");
+        //System.out.println(System.currentTimeMillis() - startMs + "ms");
     }
 
     private void addPieces() {

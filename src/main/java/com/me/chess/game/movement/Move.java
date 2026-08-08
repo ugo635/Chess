@@ -63,6 +63,9 @@ public class Move {
         // Resets the highlight
         this.from.resetState();
 
+        // Win check if it's not a renderless move
+        if (this.from.renderer != null) MoveChecker.isWinOrStaleMate(this.board);
+
         // Resets everything to null
         this.from = null;
         this.to = null;

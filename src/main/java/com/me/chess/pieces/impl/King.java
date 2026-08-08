@@ -26,24 +26,25 @@ public class King extends Piece {
 
         // For Small Castle
         if (this.hasntMoved()) {
-            Rook rook = this.board.getPiecesofType(Rook.class)
+            List<Rook> rooks = this.board.getPiecesofType(Rook.class)
                     .stream()
-                    .filter(r -> r.isRightRook && r.isOppositeColor(this))
-                    .toList()
-                    .getFirst();
+                    .filter(r -> r.isRightRook && r.color == this.color)
+                    .toList();
 
-            if (rook.hasntMoved() && this.isEmptyInRange(Direction.RIGHT, 2)) legalMoves.add(this.getPosition().addX(2));
+            Rook rook = rooks.isEmpty() ? null : rooks.getFirst();
+
+            if (rook != null && rook.hasntMoved() && this.isEmptyInRange(Direction.RIGHT, 2)) legalMoves.add(this.getPosition().addX(2));
         }
 
         // For Long Castle
         if (this.hasntMoved()) {
-            Rook rook = this.board.getPiecesofType(Rook.class)
+            List<Rook> rooks = this.board.getPiecesofType(Rook.class)
                     .stream()
-                    .filter(r -> !r.isRightRook && r.isOppositeColor(this))
-                    .toList()
-                    .getFirst();
+                    .filter(r -> !r.isRightRook && r.color == this.color)
+                    .toList();
 
-            if (rook.hasntMoved() && this.isEmptyInRange(Direction.LEFT, 2)) legalMoves.add(this.getPosition().addX(-2));
+            Rook rook = rooks.isEmpty() ? null : rooks.getFirst();
+            if (rook != null && rook.hasntMoved() && this.isEmptyInRange(Direction.LEFT, 2)) legalMoves.add(this.getPosition().addX(-2));
         }
 
 
@@ -51,14 +52,11 @@ public class King extends Piece {
 
         // KING CHECKS FILTERING
         List<Point> allPiecesLegalMoves = this.getAllPiecesLegalMoves();
-        boolean checked = this.isKingChecked(allPiecesLegalMoves);
 
-        return !checked
-                ? legalMoves
-                : legalMoves
-                            .stream()
-                            .filter(p -> !allPiecesLegalMoves.contains(p)) // Remove points that are attacked by a piece from the legal moves
-                            .toList();
+        return legalMoves
+                .stream()
+                .filter(p -> !allPiecesLegalMoves.contains(p)) // Remove points that are attacked by a piece from the legal moves
+                .toList();
     }
 
     public boolean isKingChecked(List<Point> allPiecesLegalMoves) {
@@ -75,7 +73,7 @@ public class King extends Piece {
      * ONLY THE LEGAL MOVES OF THIS COLOR AND THAT ISN'T A KING
      */
     public List<Point> getAllPiecesLegalMoves() {
-        return this.board.getAllLegalMovesOfColor(this);
+        return this.board.getAllLegalMovesOfColor(this.color.getOpposite());
     }
 
     @Override
