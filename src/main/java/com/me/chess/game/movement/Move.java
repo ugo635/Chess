@@ -63,8 +63,11 @@ public class Move {
         // Resets the highlight
         this.from.resetState();
 
-        // Win check if it's not a renderless move
-        if (this.from.renderer != null) MoveChecker.isWinOrStaleMate(this.board);
+        // Win check & turn switch if it's not a renderless move
+        if (this.from.renderer != null) {
+            MoveChecker.isWinOrStaleMate(this.board);
+            this.board.switchTurn();
+        }
 
         // Resets everything to null
         this.from = null;
@@ -72,6 +75,14 @@ public class Move {
     }
 
     private void createPopupForPromotion(Pawn pawn) {
+        if (pawn.renderer == null) {
+            Piece promotedPiece = Piece.PieceType.QUEEN.getInstance(this.from, pawn.color.getPaintColor());
+            pawn.delete();
+
+            this.movesThePiece(promotedPiece);
+            return;
+        }
+
         Rectangle rectangle = new Rectangle();
         rectangle.setWidth(SQUARE_SIZE * 5);
         rectangle.setHeight(SQUARE_SIZE * 1.25);

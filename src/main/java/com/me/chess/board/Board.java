@@ -24,12 +24,14 @@ public class Board {
     public Move move;
     public int totalMoves;
     public ChessGame game;
+    public Piece.PieceColor currentTurn;
 
     public Board(ChessGame game) {
         this.game = game;
         this.squares = new ArrayList<>();
         this.move = new Move(this, null, null);
         this.totalMoves = 0;
+        this.currentTurn = Piece.PieceColor.WHITE;
 
         Color light = new Color(0.941f, 0.851f, 0.710f, 1.0f);
         Color dark = new Color(0.706f, 0.533f, 0.392f, 1.0f);
@@ -42,6 +44,15 @@ public class Board {
                 this.squares.add(square);
             }
         }
+    }
+
+    /**
+     * Switches whose turn it is.
+     * Only real, on-screen moves should call this (not simulated/renderless moves
+     * used for check-detection).
+     */
+    public void switchTurn() {
+        this.currentTurn = this.currentTurn.getOpposite();
     }
 
     public Square getSquareAt(int x, int y) {
@@ -96,27 +107,10 @@ public class Board {
         return allPiecesLegalMoves;
     }
 
-    /**
-     * DOES NOT INCLUDE THE KING !!
-     */
-    public List<Point> getAllLegalMovesOfColor(Piece pieceToAvoid) {
-        List<Point> allPiecesLegalMoves = new ArrayList<>();
-
-        List<Piece> pieces = this.getPieces()
-                .stream()
-                .filter(piece -> piece.color == pieceToAvoid.color && !(piece == pieceToAvoid))
-                .toList();
-
-        for (Piece piece : pieces) {
-            if (!(piece instanceof King)) allPiecesLegalMoves.addAll(piece.getDefaultLegalMoves());
-        }
-
-        return allPiecesLegalMoves;
-    }
-
     public Board copy() {
         Board board = new Board(this.game);
         board.totalMoves = this.totalMoves;
+        board.currentTurn = this.currentTurn;
 
         board.squares = this.squares
                 .stream()

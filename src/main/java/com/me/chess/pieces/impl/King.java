@@ -24,35 +24,44 @@ public class King extends Piece {
             if (this.getPosition().add(dir.getDiff()).isOppositeColorPieceOrEmpty(this.board, this)) legalMoves.add(this.getPosition().add(dir.getDiff()));
         }
 
-        // For Small Castle
-        if (this.hasntMoved()) {
-            List<Rook> rooks = this.board.getPiecesofType(Rook.class)
-                    .stream()
-                    .filter(r -> r.isRightRook && r.color == this.color)
-                    .toList();
-
-            Rook rook = rooks.isEmpty() ? null : rooks.getFirst();
-
-            if (rook != null && rook.hasntMoved() && this.isEmptyInRange(Direction.RIGHT, 2)) legalMoves.add(this.getPosition().addX(2));
-        }
-
-        // For Long Castle
-        if (this.hasntMoved()) {
-            List<Rook> rooks = this.board.getPiecesofType(Rook.class)
-                    .stream()
-                    .filter(r -> !r.isRightRook && r.color == this.color)
-                    .toList();
-
-            Rook rook = rooks.isEmpty() ? null : rooks.getFirst();
-            if (rook != null && rook.hasntMoved() && this.isEmptyInRange(Direction.LEFT, 2)) legalMoves.add(this.getPosition().addX(-2));
-        }
-
-
-
-
-        // KING CHECKS FILTERING
+        // Squares attacked by the opponent right now (used both to filter normal
+        // moves below and to decide whether castling is even allowed)
         List<Point> allPiecesLegalMoves = this.getAllPiecesLegalMoves();
 
+        // Can't castle out of, through, or into check
+        if (!this.isKingChecked(allPiecesLegalMoves)) {
+            // For Small Castle
+            if (this.hasntMoved()) {
+                List<Rook> rooks = this.board.getPiecesofType(Rook.class)
+                        .stream()
+                        .filter(r -> r.isRightRook && r.color == this.color)
+                        .toList();
+
+                Rook rook = rooks.isEmpty() ? null : rooks.getFirst();
+                Point passThrough = this.getPosition().addX(1);
+
+                if (rook != null && rook.hasntMoved() && this.isEmptyInRange(Direction.RIGHT, 2) && !allPiecesLegalMoves.contains(passThrough)) {
+                    legalMoves.add(this.getPosition().addX(2));
+                }
+            }
+
+            // For Long Castle
+            if (this.hasntMoved()) {
+                List<Rook> rooks = this.board.getPiecesofType(Rook.class)
+                        .stream()
+                        .filter(r -> !r.isRightRook && r.color == this.color)
+                        .toList();
+
+                Rook rook = rooks.isEmpty() ? null : rooks.getFirst();
+                Point passThrough = this.getPosition().addX(-1);
+
+                if (rook != null && rook.hasntMoved() && this.isEmptyInRange(Direction.LEFT, 2) && !allPiecesLegalMoves.contains(passThrough)) {
+                    legalMoves.add(this.getPosition().addX(-2));
+                }
+            }
+        }
+
+        // KING CHECKS FILTERING
         return legalMoves
                 .stream()
                 .filter(p -> !allPiecesLegalMoves.contains(p)) // Remove points that are attacked by a piece from the legal moves

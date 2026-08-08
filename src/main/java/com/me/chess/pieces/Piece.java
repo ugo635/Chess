@@ -105,12 +105,10 @@ public abstract class Piece implements Renderable {
     public abstract List<Point> getDefaultLegalMoves();
 
     public final List<Point> getLegalMoves() {
-        return (this instanceof King)
-                ? this.getDefaultLegalMoves()
-                : this.getDefaultLegalMoves()
-                                            .stream()
-                                            .filter(point -> !MoveChecker.checkedAfterMove(new Move(this.board, this.getSquare(), point.getSquare(this.board))))
-                                            .toList();
+        return this.getDefaultLegalMoves()
+                .stream()
+                .filter(point -> !MoveChecker.checkedAfterMove(new Move(this.board, this.getSquare(), point.getSquare(this.board))))
+                .toList();
     }
 
     @Override

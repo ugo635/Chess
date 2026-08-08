@@ -8,7 +8,6 @@ import com.me.chess.game.renderer.Renderer;
 import com.me.chess.pieces.Piece;
 import com.me.chess.pieces.impl.Pawn;
 import com.me.chess.pieces.impl.Rook;
-import com.me.chess.vectors.Point;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -49,27 +48,13 @@ public class BoardRenderer implements Renderer {
 
         if (this.board.move.from == null) { // If we select a piece
             if (square.isEmpty()) return;
+
+            // Can only select a piece belonging to the player whose turn it is
+            if (square.getPiece().color != this.board.currentTurn) return;
+
             square.toggleSelect();
 
             this.board.move.from = square;
-
-            // Return if we're checked & can't block check
-            if (MoveChecker.isKingChecked(this.board, square.getPiece().color)) {
-                boolean hasEscape = false;
-
-                for (Point possibleMove : square.getPiece().getLegalMoves()) {
-                    boolean willBeChecked = MoveChecker.checkedAfterMove(new Move(this.board, square, possibleMove.getSquare(this.board)));
-                    if (!willBeChecked) {
-                        hasEscape = true;
-                        break;
-                    }
-                }
-
-                if (!hasEscape) {
-                    this.board.move.from = null;
-                    return;
-                }
-            }
 
             if (square.getPiece() != null) square.toggleShowingAttacks();
 
