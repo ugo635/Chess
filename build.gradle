@@ -12,7 +12,7 @@ repositories {
 
 javafx {
     version = "26.0.2"
-    modules = [ 'javafx.controls' ]
+    modules = ['javafx.controls']
 }
 
 dependencies {
@@ -21,5 +21,48 @@ dependencies {
 
 application {
     mainClass = "com.me.chess.Main"
-    mainModule = "chess"
+    mainModule = "Chess.main"
+}
+
+tasks.register("createRuntimeImage", Exec) {
+    dependsOn jar
+
+    doFirst {
+        def runtimeDir = file("$buildDir/runtime")
+        delete runtimeDir
+
+        def modulePath = files(
+                "$buildDir/libs/Chess-1.0.jar",
+                configurations.runtimeClasspath
+        ).asPath
+
+        commandLine(
+                "jlink",
+                "--module-path", modulePath,
+                "--add-modules", "Chess.main",
+                "--output", runtimeDir.absolutePath,
+                "--strip-debug",
+                "--no-header-files",
+                "--no-man-pages"
+        )
+    }
+}
+
+tasks.register("packageExeInstantOpen", Exec) {
+    dependsOn createRuntimeImage
+
+    doFirst {
+        def appDir = file("$buildDir/app")
+        delete appDir
+        appDir.mkdirs()
+
+        commandLine(
+                "jpackage",
+                "--type", "app-image",
+                "--name", "Chess",
+                "--runtime-image", "$buildDir/runtime",
+                "--module", "Chess.main/com.me.chess.Main",
+                "--dest", appDir.absolutePath
+        )
+    }
 }
