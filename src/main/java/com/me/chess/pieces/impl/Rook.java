@@ -14,6 +14,12 @@ public class Rook extends Piece {
 
     public Rook(Square square, Color color) {
         super(square, color);
+        this.value = 5;
+    }
+
+    @Override
+    public float getValue() {
+        return this.value;
     }
 
     @Override

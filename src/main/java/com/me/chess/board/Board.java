@@ -120,6 +120,13 @@ public class Board {
         return board;
     }
 
+    public List<Piece> getPieces(Piece.PieceColor pieceColor) {
+        return this.getPieces()
+                .stream()
+                .filter(piece -> piece.color == pieceColor)
+                .toList();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

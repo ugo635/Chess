@@ -1,6 +1,5 @@
 package com.me.chess.board;
 
-import com.me.chess.game.IllegalStateUpdate;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
@@ -34,8 +33,6 @@ public class Highlight {
 
     public void updateState(Square.State newState) {
         Square.State oldState = this.getState();
-
-        if (newState == oldState) throw new IllegalStateUpdate(String.format("You shouldn't be able to update a state to the same one (%s)", newState));
 
         if (newState == Square.State.NONE) {
             if (oldState == Square.State.SELECTED) this.square.renderer.removeElement(highlightedRectangle);

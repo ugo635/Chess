@@ -13,6 +13,12 @@ import java.util.List;
 public class King extends Piece {
     public King(Square square, Color color) {
         super(square, color);
+        this.value = 0;
+    }
+
+    @Override
+    public float getValue() {
+        return this.value;
     }
 
     @Override

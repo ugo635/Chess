@@ -44,13 +44,14 @@ public class BoardRenderer implements Renderer {
 
     @SuppressWarnings("DataFlowIssue")
     private void squareClick(Square square) {
-        //long startMs = System.currentTimeMillis();
-
         if (this.board.move.from == null) { // If we select a piece
             if (square.isEmpty()) return;
 
             // Can only select a piece belonging to the player whose turn it is
             if (square.getPiece().color != this.board.currentTurn) return;
+
+            // Dont let the player play, only the engine is allowed to
+            if (square.getPiece().color == Piece.PieceColor.BLACK) return;
 
             square.toggleSelect();
 
@@ -86,8 +87,6 @@ public class BoardRenderer implements Renderer {
 
             this.board.move.move();
         }
-
-        //System.out.println(System.currentTimeMillis() - startMs + "ms");
     }
 
     private void addPieces() {
@@ -103,7 +102,7 @@ public class BoardRenderer implements Renderer {
         }
 
         // Add the pieces
-        List<Piece.PieceType> pieceOrder = List.of(ROOK, BISHOP, KNIGHT, QUEEN, KING, KNIGHT, BISHOP, ROOK);
+        List<Piece.PieceType> pieceOrder = List.of(ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK);
         for (int i = 0; i < 64; i++) {
             if (i == 8) {
                 i = 55;

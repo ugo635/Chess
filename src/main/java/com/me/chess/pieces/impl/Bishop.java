@@ -12,6 +12,12 @@ import java.util.List;
 public class Bishop extends Piece {
     public Bishop(Square square, Color color) {
         super(square, color);
+        this.value = 3;
+    }
+
+    @Override
+    public float getValue() {
+        return this.value;
     }
 
     @Override

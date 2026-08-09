@@ -1,5 +1,6 @@
 package com.me.chess.pieces.impl;
 
+import com.me.chess.engine.evaluator.PawnEvaluator;
 import com.me.chess.game.movement.Move;
 import com.me.chess.game.movement.MoveChecker;
 import com.me.chess.vectors.Direction;
@@ -22,6 +23,12 @@ public class Pawn extends Piece {
 
     public Pawn(Square square, Color color) {
         super(square, color);
+        this.value = 1;
+    }
+
+    @Override
+    public float getValue() {
+        return PawnEvaluator.getValue(this);
     }
 
     @Override

@@ -70,20 +70,27 @@ public class MoveChecker {
         return moves;
     }
 
-    public static void isWinOrStaleMate(Board board) {
+    public static BoardState isWinOrStaleMate(Board board) {
         List<Point> whiteLegalMoves = getAllRealLegalMovesOfColor(board, Piece.PieceColor.WHITE);
         List<Point> blackLegalMoves = getAllRealLegalMovesOfColor(board, Piece.PieceColor.BLACK);
 
-        if (!isStaleMate(whiteLegalMoves, blackLegalMoves)) return;
+        if (!isStaleMate(whiteLegalMoves, blackLegalMoves)) return BoardState.NORMAL;
 
-        if (whiteLegalMoves.isEmpty() && isKingChecked(board, Piece.PieceColor.WHITE)) {
-            System.out.println("Black wins!");
-        } else if (blackLegalMoves.isEmpty() && isKingChecked(board, Piece.PieceColor.BLACK)) {
-            System.out.println("White wins!");
+        if (blackLegalMoves.isEmpty() && isKingChecked(board, Piece.PieceColor.BLACK)) {
+            System.out.println("White Wins!");
+            return BoardState.WHITE_WINS;
+        } else if (whiteLegalMoves.isEmpty() && isKingChecked(board, Piece.PieceColor.WHITE)) {
+            System.out.println("Black Wins");
+            return BoardState.BLACK_WINS;
         } else {
             System.out.println("Stalemate!");
+            return BoardState.STALEMATE;
         }
 
+    }
+
+    public enum BoardState {
+        WHITE_WINS, BLACK_WINS, STALEMATE, NORMAL;
     }
 
 }

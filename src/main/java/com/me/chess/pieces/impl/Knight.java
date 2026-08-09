@@ -11,6 +11,12 @@ import java.util.List;
 public class Knight extends Piece {
     public Knight(Square square, Color color) {
         super(square, color);
+        this.value = 3;
+    }
+
+    @Override
+    public float getValue() {
+        return this.value;
     }
 
     @Override

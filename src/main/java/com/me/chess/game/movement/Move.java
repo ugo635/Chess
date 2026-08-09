@@ -64,14 +64,19 @@ public class Move {
         this.from.resetState();
 
         // Win check & turn switch if it's not a renderless move
-        if (this.from.renderer != null) {
-            MoveChecker.isWinOrStaleMate(this.board);
+        boolean isRenderless = this.from.renderer == null;
+        if (!isRenderless) {
+            if (MoveChecker.isWinOrStaleMate(this.board) != MoveChecker.BoardState.NORMAL) return;
             this.board.switchTurn();
         }
 
         // Resets everything to null
         this.from = null;
         this.to = null;
+
+        // Make the engine move
+        if (this.board.currentTurn == Piece.PieceColor.BLACK && !isRenderless) this.board.game.engine.getChosenMove().move();
+
     }
 
     private void createPopupForPromotion(Pawn pawn) {

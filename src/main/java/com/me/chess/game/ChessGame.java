@@ -1,6 +1,7 @@
 package com.me.chess.game;
 
 import com.me.chess.board.Board;
+import com.me.chess.engine.Engine;
 import com.me.chess.game.renderer.impl.BoardRenderer;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
@@ -13,6 +14,7 @@ public class ChessGame {
     public Scene scene;
     public Board board;
     public BoardRenderer renderer;
+    public Engine engine;
 
     public ChessGame() {
         this.grid = new GridPane();
@@ -20,6 +22,7 @@ public class ChessGame {
         this.scene = new Scene(container);
         this.board = new Board(this);
         this.renderer = new BoardRenderer(board, container, grid);
+        this.engine = new Engine(board);
 
         this.renderer.render();
     }

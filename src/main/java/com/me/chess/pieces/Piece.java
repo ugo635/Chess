@@ -18,9 +18,10 @@ public abstract class Piece implements Renderable {
     public final PieceType pieceType;
     public PieceRenderer renderer;
     public final PieceColor color;
-    protected final Board board;
+    public final Board board;
     protected Square square;
     public int move;
+    public float value;
 
     public Piece(Square square, Color color) {
         this.pieceType = PieceType.valueOf(getClass().getSimpleName().toUpperCase());
@@ -43,6 +44,8 @@ public abstract class Piece implements Renderable {
         }
 
     }
+
+    public abstract float getValue();
 
     public Square getSquare() {
         return square;
@@ -128,7 +131,12 @@ public abstract class Piece implements Renderable {
     }
 
     public enum PieceType {
-        KING, QUEEN, ROOK, KNIGHT, BISHOP, PAWN;
+        KING,
+        QUEEN,
+        ROOK,
+        KNIGHT,
+        BISHOP,
+        PAWN;
 
         public Piece getInstance(Square square, Color color) {
             return switch (this) {
