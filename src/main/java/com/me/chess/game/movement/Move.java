@@ -12,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.application.Platform;
 
 import static com.me.chess.game.ChessGame.SQUARE_SIZE;
 
@@ -76,7 +77,20 @@ public class Move {
 
         // Make the engine move
         long start = System.currentTimeMillis();
-        if (this.board.currentTurn == Piece.PieceColor.BLACK && !isRenderless) this.board.game.engine.getChosenMove().move();
+        if (!isRenderless && this.board.currentTurn == Piece.PieceColor.BLACK) {
+            // Run engine thinking off the JavaFX Application Thread so the UI can update
+            new Thread(() -> {
+                Move chosen = this.board.game.engine.getChosenMove();
+                if (chosen == null) return;
+                Platform.runLater(() -> {
+                    try {
+                        chosen.move();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }).start();
+        }
         if (!isRenderless && (System.currentTimeMillis() - start) > 5) System.out.println((System.currentTimeMillis() - start) + "ms");
 
     }
