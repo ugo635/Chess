@@ -1,5 +1,6 @@
 package com.me.chess.pieces.impl;
 
+import com.me.chess.engine.evaluator.RookEvaluator;
 import com.me.chess.vectors.Direction;
 import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
@@ -19,7 +20,7 @@ public class Rook extends Piece {
 
     @Override
     public float getValue() {
-        return this.value;
+        return RookEvaluator.getValue(this);
     }
 
     @Override

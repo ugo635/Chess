@@ -22,7 +22,17 @@ public class Engine {
     }
 
     public Move getChosenMove() {
-        return this.minimax(this.board, depth, this.color, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY).second;
+        Move minimax = this.minimax(this.board, depth, this.color, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY).second;
+        if (minimax != null) return minimax;
+
+        // Default if minimax doesnt find anything
+        for (Piece piece : board.getPieces(color)) {
+            for (Point destination : piece.getLegalMoves()) {
+                return new Move(this.board, piece.getSquare(), destination.getSquare(this.board));
+            }
+        }
+
+        return null;
     }
 
     private Pair<Float, Move> minimax(Board board, int depth, PieceColor color, float alpha, float beta) {

@@ -1,15 +1,15 @@
 package com.me.chess.engine.evaluator;
 
-import com.me.chess.pieces.impl.Knight;
+import com.me.chess.pieces.impl.Queen;
 import com.me.chess.vectors.Point;
 
-public class KnightEvaluator {
-    public static float getValue(Knight knight) {
-        return 3 + getAddedValue(knight);
+public class QueenEvaluator {
+    public static float getValue(Queen queen) {
+        return 9 + getAddedValue(queen);
     }
 
-    private static float getAddedValue(Knight knight) {
-        Point position = knight.getPosition();
+    private static float getAddedValue(Queen queen) {
+        Point position = queen.getPosition();
 
         float rowValue = switch (position.x) {
             case 1, 8 -> 0.0f;

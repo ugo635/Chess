@@ -1,5 +1,6 @@
 package com.me.chess.pieces.impl;
 
+import com.me.chess.engine.evaluator.BishopEvaluator;
 import com.me.chess.vectors.Direction;
 import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
@@ -17,7 +18,7 @@ public class Bishop extends Piece {
 
     @Override
     public float getValue() {
-        return this.value;
+        return BishopEvaluator.getValue(this);
     }
 
     @Override

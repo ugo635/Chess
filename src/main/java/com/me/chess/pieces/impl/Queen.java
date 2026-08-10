@@ -1,5 +1,6 @@
 package com.me.chess.pieces.impl;
 
+import com.me.chess.engine.evaluator.QueenEvaluator;
 import com.me.chess.vectors.Direction;
 import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
@@ -17,7 +18,7 @@ public class Queen extends Piece {
 
     @Override
     public float getValue() {
-        return this.value;
+        return QueenEvaluator.getValue(this);
     }
 
     @Override

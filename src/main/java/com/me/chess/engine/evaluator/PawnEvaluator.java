@@ -5,26 +5,34 @@ import com.me.chess.vectors.Point;
 
 public class PawnEvaluator {
     public static float getValue(Pawn pawn) {
-        final Point pos = pawn.getPosition();
-        final int x = pos.x;
-        final int y = pos.y;
+        return 1 + getAddedValue(pawn);
+    }
 
-        float addedValue = 0;
+    private static float getAddedValue(Pawn pawn) {
+        Point position = pawn.getPosition();
 
-        if (x == 2) addedValue += 0.025f;
-        else if (x == 3) addedValue += 0.075f;
-        else if (x == 4) addedValue += 0.125f;
-        else if (x == 5) addedValue += 0.125f;
-        else if (x == 6) addedValue += 0.075f;
-        else if (x == 7) addedValue += 0.025f;
+        int rank = (position.y - pawn.START_RANK) * pawn.ONE + 1;
 
-        if (y == (pawn.START_RANK + pawn.ONE)) addedValue += 0.075f; // 3
-        else if (y == (pawn.START_RANK + pawn.TWO)) addedValue += 0.125f; // 4
-        else if (y == (pawn.START_RANK + pawn.ONE * 3)) addedValue += 0.13f; // 5
-        else if (y == (pawn.START_RANK + pawn.ONE * 4)) addedValue += 0.5f; // 6
-        else if (y == (pawn.START_RANK + pawn.ONE * 5)) addedValue += 3f; // 7
-        else addedValue += 9f; // 8
+        float rankValue = switch (rank) {
+            case 1 -> 0.0f;
+            case 2 -> 0.5f;
+            case 3 -> 1.0f;
+            case 4 -> 1.5f;
+            case 5 -> 2.0f;
+            case 6 -> 2.5f;
+            case 7 -> 3.0f;
+            case 8 -> 3.5f;
+            default -> 0.0f;
+        };
 
-        return 1 + addedValue;
+        float rowValue = switch (position.x) {
+            case 1, 8 -> 0.0f;
+            case 2, 7 -> 0.1f;
+            case 3, 6 -> 0.2f;
+            case 4, 5 -> 0.3f;
+            default -> 0.0f;
+        };
+
+        return rankValue + rowValue;
     }
 }
