@@ -75,7 +75,9 @@ public class Move {
         this.to = null;
 
         // Make the engine move
+        long start = System.currentTimeMillis();
         if (this.board.currentTurn == Piece.PieceColor.BLACK && !isRenderless) this.board.game.engine.getChosenMove().move();
+        if (!isRenderless) System.out.println((System.currentTimeMillis() - start) + "ms");
 
     }
 

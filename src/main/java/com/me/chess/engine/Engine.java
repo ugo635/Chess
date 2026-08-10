@@ -22,10 +22,10 @@ public class Engine {
     }
 
     public Move getChosenMove() {
-        return this.minimax(this.board, depth, this.color).second;
+        return this.minimax(this.board, depth, this.color, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY).second;
     }
 
-    private Pair<Float, Move> minimax(Board board, int depth, PieceColor color) {
+    private Pair<Float, Move> minimax(Board board, int depth, PieceColor color, float alpha, float beta) {
         if (depth == 0) return this.getDepthOne(board);
 
         Pair<Float, Move> value = new Pair<>(
@@ -33,22 +33,37 @@ public class Engine {
                 new Move(null, null, null)
         );
 
-        for (Piece piece : board.getPieces(color)) {
-            for (Point destination : piece.getLegalMoves()) {
-                Simulator sim = new Simulator(board, piece.getSquare(), destination.getSquare(board), null);
-                Board b = sim.simulate();
-                Pair<Float, Move> minimaxRes = this.minimax(b, depth - 1, color.getOpposite());
+        if (color.isWhite()) {
+            outer:
+            for (Piece piece : board.getPieces(color)) {
+                for (Point destination : piece.getLegalMoves()) {
+                    Simulator sim = new Simulator(board, piece.getSquare(), destination.getSquare(board), null);
+                    Board b = sim.simulate();
+                    Pair<Float, Move> minimaxRes = this.minimax(b, depth - 1, color.getOpposite(), alpha, beta);
 
-                if (color.isWhite()) {
                     if (value.first < minimaxRes.first) {
                         value = new Pair<>(minimaxRes.first, sim.getMove());
                     }
-                } else {
+
+                    if (value.first >= beta) break outer;
+                    alpha = Math.max(alpha, value.first);
+                }
+            }
+        } else {
+            outer:
+            for (Piece piece : board.getPieces(color)) {
+                for (Point destination : piece.getLegalMoves()) {
+                    Simulator sim = new Simulator(board, piece.getSquare(), destination.getSquare(board), null);
+                    Board b = sim.simulate();
+                    Pair<Float, Move> minimaxRes = this.minimax(b, depth - 1, color.getOpposite(), alpha, beta);
+
                     if (value.first > minimaxRes.first) {
                         value = new Pair<>(minimaxRes.first, sim.getMove());
                     }
-                }
 
+                    if (value.first <= alpha) break outer;
+                    beta = Math.min(beta, value.first);
+                }
             }
         }
 
