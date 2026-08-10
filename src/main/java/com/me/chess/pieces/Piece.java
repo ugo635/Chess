@@ -23,12 +23,22 @@ public abstract class Piece implements Renderable {
     public int move;
     public float value;
 
+    public final int ONE;
+    public final int TWO;
+    public final int START_RANK;
+    public final int EIGHT_RANK;
+
     public Piece(Square square, Color color) {
         this.pieceType = PieceType.valueOf(getClass().getSimpleName().toUpperCase());
         this.color = PieceColor.from(color);
         this.move = 0;
         this.square = square;
         this.board = square.board;
+
+        this.ONE = this.color.isWhite() ? 1 : -1;
+        this.TWO = this.ONE * 2;
+        this.START_RANK = this.color.isWhite() ? 2 : 7;
+        this.EIGHT_RANK = START_RANK == 2 ? 8 : 1;
     }
 
     @Override

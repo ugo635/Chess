@@ -66,3 +66,20 @@ tasks.register("packageExeInstantOpen", Exec) {
         )
     }
 }
+
+tasks.register("countLines") {
+    doLast {
+        def files = fileTree("src").matching {
+            include "**/*.java"
+        }.files.collect { file ->
+            [file: file, lines: file.readLines().size()]
+        }.sort { a, b -> b.lines <=> a.lines }
+
+        files.each {
+            println "${it.file}: ${it.lines} lines"
+        }
+
+        println ""
+        println "Total: ${files.sum { it.lines }} lines"
+    }
+}

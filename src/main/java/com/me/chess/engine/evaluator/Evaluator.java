@@ -17,7 +17,7 @@ public class Evaluator {
         List<Piece> pieces = board.getPieces(Piece.PieceColor.WHITE);
 
         for (Piece piece : pieces) {
-            value += getValueOfWhitePiece(piece);
+            value += getValueOf(piece);
         }
 
         return value;
@@ -29,21 +29,14 @@ public class Evaluator {
         List<Piece> pieces = board.getPieces(Piece.PieceColor.BLACK);
 
         for (Piece piece : pieces) {
-            value -= getValueOfBlackPiece(piece);
+            value -= getValueOf(piece);
         }
 
         return value;
     }
 
 
-    private static float getValueOfBlackPiece(Piece piece) {
-        // The closer the pawn is the the center the more valuable it is
-        // The more attack square pieces attack the better
-        if (piece instanceof Pawn pawn) return PawnEvaluator.getValue(pawn);
-        else return piece.value;
-    }
-
-    private static float getValueOfWhitePiece(Piece piece) {
+    private static float getValueOf(Piece piece) {
         return piece.getValue();
     }
 }

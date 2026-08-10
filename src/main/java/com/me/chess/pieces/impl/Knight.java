@@ -1,5 +1,6 @@
 package com.me.chess.pieces.impl;
 
+import com.me.chess.engine.evaluator.KnightEvaluator;
 import com.me.chess.vectors.Point;
 import com.me.chess.board.Square;
 import com.me.chess.pieces.Piece;
@@ -16,7 +17,7 @@ public class Knight extends Piece {
 
     @Override
     public float getValue() {
-        return this.value;
+        return KnightEvaluator.getValue(this);
     }
 
     @Override

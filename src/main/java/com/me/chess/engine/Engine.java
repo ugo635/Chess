@@ -5,38 +5,64 @@ import com.me.chess.board.Square;
 import com.me.chess.engine.evaluator.Evaluator;
 import com.me.chess.game.movement.Move;
 import com.me.chess.pieces.Piece;
+import com.me.chess.pieces.Piece.PieceColor;
 import com.me.chess.utils.Pair;
 import com.me.chess.vectors.Point;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 public class Engine {
     private final Board board;
-    private final Piece.PieceColor color;
+    private final PieceColor color;
+    private static final int depth = 3;
 
     public Engine(Board board) {
+        this.color = PieceColor.BLACK;
         this.board = board;
-        this.color = Piece.PieceColor.BLACK;
     }
 
     public Move getChosenMove() {
-        List<Simulator> simulators = new ArrayList<>();
+        return this.minimax(this.board, depth, this.color).second;
+    }
 
-        for (Piece piece : this.board.getPieces(this.color)) {
+    private Pair<Float, Move> minimax(Board board, int depth, PieceColor color) {
+        if (depth == 0) return this.getDepthOne(board);
+
+        Pair<Float, Move> value = new Pair<>(
+                color.isWhite() ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY,
+                new Move(null, null, null)
+        );
+
+        for (Piece piece : board.getPieces(color)) {
             for (Point destination : piece.getLegalMoves()) {
-                simulators.add(new Simulator(this.board, piece.getSquare(), destination.getSquare(this.board)));
+                Simulator sim = new Simulator(board, piece.getSquare(), destination.getSquare(board), null);
+                Board b = sim.simulate();
+                Pair<Float, Move> minimaxRes = this.minimax(b, depth - 1, color.getOpposite());
+
+                if (color.isWhite()) {
+                    if (value.first < minimaxRes.first) {
+                        value = new Pair<>(minimaxRes.first, sim.getMove());
+                    }
+                } else {
+                    if (value.first > minimaxRes.first) {
+                        value = new Pair<>(minimaxRes.first, sim.getMove());
+                    }
+                }
+
             }
         }
 
-        simulators.sort(Simulator::compareTo);
-        Simulator bestSimulator = simulators.getFirst();
-
-        return bestSimulator.getMove();
+        return value;
     }
 
-    private record Simulator(Board board, Square origin, Square destination) implements Comparable<Simulator> {
+    private Pair<Float, Move> getDepthOne(Board board) {
+        return new Pair<>(
+                Evaluator.evaluate(board),
+                new Move(null, null, null)
+        );
+    }
+
+    private record Simulator(Board board, Square origin, Square destination, @Nullable Simulator source) implements Comparable<Simulator> {
         public float getValueOfMove() {
             return Evaluator.evaluate(this.simulate());
         }
@@ -57,8 +83,8 @@ public class Engine {
 
         private Board simulate() {
             Pair<Board, Move> infos = this.getInfos();
-            Board simulatedBoard = infos.first();
-            Move simulatedMove = infos.second();
+            Board simulatedBoard = infos.first;
+            Move simulatedMove = infos.second;
 
             simulatedBoard.move = simulatedMove;
             simulatedBoard.move.move();

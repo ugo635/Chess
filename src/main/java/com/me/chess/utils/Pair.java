@@ -1,3 +1,11 @@
 package com.me.chess.utils;
 
-public record Pair<T, U>(T first, U second) {}
+public class Pair<T, U> {
+    public T first;
+    public U second;
+
+    public Pair(T first, U second) {
+        this.first = first;
+        this.second = second;
+    }
+}
