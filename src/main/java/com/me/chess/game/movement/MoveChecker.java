@@ -35,10 +35,12 @@ public class MoveChecker {
     }
 
     public static boolean isKingChecked(Board board, Piece.PieceColor color) {
-        return board.getPiecesofType(King.class)
+        List<King> kings = board.getPiecesofType(King.class)
                 .stream()
                 .filter(k -> k.color == color)
-                .toList()
+                .toList();
+
+        return kings
                 .getFirst()
                 .isKingChecked(board.getAllLegalMovesOfColor(color.getOpposite()));
     }

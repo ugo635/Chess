@@ -117,6 +117,15 @@ public abstract class Piece implements Renderable {
 
     public abstract List<Point> getDefaultLegalMoves();
 
+    /**
+     * Squares this piece threatens/defends, used for check & king-safety detection.
+     * For most pieces this is identical to their legal moves, but some pieces
+     * (e.g. Pawn) move differently than they attack, so this is overridable.
+     */
+    public List<Point> getAttackedSquares() {
+        return this.getDefaultLegalMoves();
+    }
+
     public final List<Point> getLegalMoves() {
         return this.getDefaultLegalMoves()
                 .stream()

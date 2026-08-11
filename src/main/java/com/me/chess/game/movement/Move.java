@@ -96,7 +96,7 @@ public class Move {
     }
 
     private void createPopupForPromotion(Pawn pawn) {
-        if (pawn.renderer == null) {
+        if (pawn.color == Piece.PieceColor.BLACK || this.from.renderer == null) {
             Piece promotedPiece = Piece.PieceType.QUEEN.getInstance(this.from, pawn.color.getPaintColor());
             pawn.delete();
 

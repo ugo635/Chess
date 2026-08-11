@@ -100,9 +100,11 @@ public class King extends Piece {
             Square newRookPos = this.getPosition().addX(1).getSquare(this.board);
 
             Piece rook = oldRookPos.getPiece();
-            oldRookPos.empty();
-            rook.setSquare(newRookPos);
-            newRookPos.setPiece(rook);
+            if (rook != null) {
+                oldRookPos.empty();
+                rook.setSquare(newRookPos);
+                newRookPos.setPiece(rook);
+            }
         }
 
         // Long Castle
@@ -111,9 +113,11 @@ public class King extends Piece {
             Square newRookPos = this.getPosition().addX(-1).getSquare(this.board);
 
             Piece rook = oldRookPos.getPiece();
-            oldRookPos.empty();
-            rook.setSquare(newRookPos);
-            newRookPos.setPiece(rook);
+            if (rook != null) {
+                oldRookPos.empty();
+                rook.setSquare(newRookPos);
+                newRookPos.setPiece(rook);
+            }
         }
     }
 }

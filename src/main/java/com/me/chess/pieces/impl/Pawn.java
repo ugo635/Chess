@@ -49,6 +49,25 @@ public class Pawn extends Piece {
     }
 
     /**
+     * A pawn only ATTACKS diagonally (never on its forward push square),
+     * and it threatens those diagonal squares whether or not they're
+     * currently occupied - a king can't step there because the pawn
+     * could capture it next.
+     */
+    @Override
+    public List<Point> getAttackedSquares() {
+        List<Point> attacked = new ArrayList<>();
+
+        Point right = this.getPosition().add(1, ONE);
+        Point left = this.getPosition().add(-1, ONE);
+
+        if (!right.isntWithinBounds()) attacked.add(right);
+        if (!left.isntWithinBounds()) attacked.add(left);
+
+        return attacked;
+    }
+
+    /**
      * Mark the pawn capturable En Passant if it just moved 2 squares
      * Handles the En Passant
      */

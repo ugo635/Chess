@@ -23,7 +23,7 @@ public class Engine {
 
     public Move getChosenMove() {
         Move minimax = this.minimax(this.board, depth, this.color, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY).second;
-        if (minimax != null) return minimax;
+        if (minimax != null && minimax.from != null) return minimax;
 
         // Default if minimax doesnt find anything
         for (Piece piece : board.getPieces(color)) {

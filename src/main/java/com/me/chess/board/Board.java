@@ -7,6 +7,7 @@ import com.me.chess.pieces.impl.King;
 import com.me.chess.pieces.impl.Pawn;
 import com.me.chess.pieces.Piece;
 import com.me.chess.pieces.impl.Rook;
+import com.me.chess.vectors.Direction;
 import com.me.chess.vectors.Point;
 import com.me.chess.game.movement.Move;
 import javafx.scene.layout.GridPane;
@@ -95,13 +96,17 @@ public class Board {
     public List<Point> getAllLegalMovesOfColor(Piece.PieceColor color) {
         List<Point> allPiecesLegalMoves = new ArrayList<>();
 
-        List<Piece> pieces = this.getPieces()
-                .stream()
-                .filter(piece -> piece.color == color && !(piece instanceof King))
-                .toList();
+        for (Piece piece : this.getPieces()) {
+            if (piece.color != color) continue;
 
-        for (Piece piece : pieces) {
-            if (!(piece instanceof King)) allPiecesLegalMoves.addAll(piece.getDefaultLegalMoves());
+            if (piece instanceof King king) {
+                for (Direction dir : Direction.values()) {
+                    Point p = king.getPosition().add(dir.getDiff());
+                    if (p.isOppositeColorPieceOrEmpty(this, king)) allPiecesLegalMoves.add(p);
+                }
+            } else {
+                allPiecesLegalMoves.addAll(piece.getAttackedSquares());
+            }
         }
 
         return allPiecesLegalMoves;
